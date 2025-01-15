@@ -47,6 +47,7 @@ public class BishopMoves implements ChessPieceCalculator{
                         break;
                     }
                 }
+
                 ChessPosition newPosition = new ChessPosition(row, column);
                 if (board.getPiece(newPosition) == null ){
                     ChessMove newChessMove = new ChessMove(myPosition, newPosition, null);
