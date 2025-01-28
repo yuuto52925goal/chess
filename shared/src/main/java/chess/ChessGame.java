@@ -52,10 +52,21 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = chessBoard.getPiece(startPosition);
-        if (piece == null) {
-            return null;
+        ChessGame.TeamColor team = piece.getTeamColor();
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(chessBoard, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        for (ChessMove possibleMove : new ArrayList<>(possibleMoves)) {
+            ChessPiece temPiece = chessBoard.getPiece(possibleMove.getEndPosition());
+            chessBoard.addPiece(possibleMove.getEndPosition(), piece);
+            chessBoard.addPiece(possibleMove.getStartPosition(), null);
+            if (!isInCheck(team)) {
+                validMoves.add(possibleMove);
+            }
+            chessBoard.addPiece(possibleMove.getEndPosition(), temPiece);
+            chessBoard.addPiece(possibleMove.getStartPosition(), piece);
         }
-        return piece.pieceMoves(chessBoard, startPosition);
+
+        return validMoves;
     }
 
     /**
@@ -88,7 +99,6 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //      Find a king
         ChessPosition kingPosition = findKing(teamColor);
         ArrayList<ChessPiece> opposingPieces = getOpposingPieces(teamColor);
         ArrayList<ChessPosition> opposingPositions = getOpposingPositions(teamColor);
@@ -96,7 +106,7 @@ public class ChessGame {
             ChessPiece opposingPiece = opposingPieces.get(i);
             ChessPosition opposingPosition = opposingPositions.get(i);
             Collection<ChessMove> opposingMoves = opposingPiece.pieceMoves(chessBoard, opposingPosition);
-            for(ChessMove opposingMove : opposingMoves) {
+            for(ChessMove opposingMove : opposingPiece.pieceMoves(chessBoard, opposingPosition)) {
                 if (opposingMove.getEndPosition().equals(kingPosition)) {
                     return true;
                 }
@@ -132,7 +142,7 @@ public class ChessGame {
         for (int i = 1; i < 9; i ++){
             for (int j = 1; j < 9; j ++){
                 ChessPiece piece = chessBoard.getPiece(new ChessPosition(i, j));
-                if (piece.getTeamColor() == teamColor && piece.getPieceType().equals(ChessPiece.PieceType.KING)) {
+                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType().equals(ChessPiece.PieceType.KING)) {
                     row = i;
                     col = j;
                 }
@@ -162,7 +172,7 @@ public class ChessGame {
             for (int col = 1; col < 9; col++) {
                 ChessPiece piece = chessBoard.getPiece(new ChessPosition(row, col));
                 if (piece != null && piece.getTeamColor() != teamColor) {
-                    opposingPieces.add(new ChessPosition(row, col));
+                    opposingPositions.add(new ChessPosition(row, col));
                 }
             }
         }

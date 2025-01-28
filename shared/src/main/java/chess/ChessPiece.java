@@ -78,19 +78,19 @@ public class ChessPiece {
         if (pieceType == PieceType.KNIGHT){
             KnightMoves knightMoves = new KnightMoves();
             Collection<ChessMove> newMoves = knightMoves.pieceMoves(board, myPosition);
-            moves.addAll(newMoves);
+            moves = new ArrayList<>(newMoves);
         }else if (pieceType == PieceType.ROOK){
             RookMoves rookMoves = new RookMoves();
             Collection<ChessMove> newMoves = rookMoves.pieceMoves(board, myPosition);
-            moves.addAll(newMoves);
+            moves = new ArrayList<>(newMoves);
         }else if (pieceType == PieceType.KING){
             KingMoves kingMoves = new KingMoves();
             Collection<ChessMove> newMoves = kingMoves.pieceMoves(board, myPosition);
-            moves.addAll(newMoves);
+            moves = new ArrayList<>(newMoves);
         }else if (pieceType == PieceType.BISHOP){
             BishopMoves bishopMoves = new BishopMoves();
             Collection<ChessMove> newMoves = bishopMoves.pieceMoves(board, myPosition);
-            moves.addAll(newMoves);
+            moves = new ArrayList<>(newMoves);
         }else if (pieceType == PieceType.QUEEN){
             QueenMoves queenMoves = new QueenMoves();
             Collection<ChessMove> newMoves = queenMoves.pieceMoves(board, myPosition);
@@ -98,7 +98,7 @@ public class ChessPiece {
         }else if (pieceType == PieceType.PAWN){
             PawnMoves pawnMoves = new PawnMoves();
             Collection<ChessMove> newMoves = pawnMoves.pieceMoves(board, myPosition);
-            moves.addAll(newMoves);
+            moves = new ArrayList<>(newMoves);
         }
         return moves;
     }
