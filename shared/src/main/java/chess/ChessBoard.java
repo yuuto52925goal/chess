@@ -44,39 +44,36 @@ public class ChessBoard {
         this.chessPieces = new ChessPiece[8][8];
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (chessPieces[i][j] == null) {
-                    if (i == 1){
-                        chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-                    }else if (i == 6){
-                        chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-                    }else if (i == 0){
-                        if (j == 0 || j == 7){
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-                        }else if (j == 1 || j == 6){
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-                        }else if (j == 2 || j == 5){
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-                        }else if (j == 3){
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-                        }else{
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-                        }
-                    }else if (i == 7){
-                        if (j == 0 || j == 7){
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-                        }else if (j == 1 || j == 6){
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-                        }else if (j == 2 || j == 5){
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-                        }else if (j == 3){
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-                        }else{
-                            chessPieces[i][j] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-                        }
-                    }
-                }
+                initializePiece(i, j);
             }
         }
+    }
+
+    private void initializePiece(int row, int col) {
+        if (row == 1) {
+            chessPieces[row][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            return;
+        }
+        if (row == 6) {
+            chessPieces[row][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            return;
+        }
+
+        if (row == 0 || row == 7) {
+            ChessGame.TeamColor color = (row == 0) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+            chessPieces[row][col] = createBackRankPiece(color, col);
+        }
+    }
+
+    private ChessPiece createBackRankPiece(ChessGame.TeamColor color, int col) {
+        return switch (col) {
+            case 0, 7 -> new ChessPiece(color, ChessPiece.PieceType.ROOK);
+            case 1, 6 -> new ChessPiece(color, ChessPiece.PieceType.KNIGHT);
+            case 2, 5 -> new ChessPiece(color, ChessPiece.PieceType.BISHOP);
+            case 3 -> new ChessPiece(color, ChessPiece.PieceType.QUEEN);
+            case 4 -> new ChessPiece(color, ChessPiece.PieceType.KING);
+            default -> null;
+        };
     }
 
     @Override
