@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class BishopMoves implements ChessPieceCalculator{
-    String[] BishopsMoves = {"RP", "RN", "LP", "LN"};
+    String[] bishopsMoves = {"RP", "RN", "LP", "LN"};
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
@@ -17,7 +17,7 @@ public class BishopMoves implements ChessPieceCalculator{
         ChessGame.TeamColor team = board.getPiece(myPosition).getTeamColor();
         int row;
         int column;
-        for (String moveDirection : BishopsMoves) {
+        for (String moveDirection : bishopsMoves) {
             row = myPosition.getRow();
             column = myPosition.getColumn();
             while (true){

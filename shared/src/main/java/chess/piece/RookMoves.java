@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class RookMoves implements ChessPieceCalculator {
-    String[] RookMoves = {"VP", "VN", "HP", "HN"};
+    String[] rookMoves = {"VP", "VN", "HP", "HN"};
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition){
@@ -17,7 +17,7 @@ public class RookMoves implements ChessPieceCalculator {
         ChessGame.TeamColor team = board.getPiece(myPosition).getTeamColor();
         int row;
         int column;
-        for (String moveDirection : RookMoves) {
+        for (String moveDirection : rookMoves) {
             row = myPosition.getRow();
             column = myPosition.getColumn();
             while (true){

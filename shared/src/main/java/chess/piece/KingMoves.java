@@ -11,7 +11,7 @@ import java.util.List;
 
 public class KingMoves implements ChessPieceCalculator{
 
-    int[][] KingMoves = {
+    int[][] kingMoves = {
             {0, 1},
             {1, 0},
             {0, -1},
@@ -28,7 +28,7 @@ public class KingMoves implements ChessPieceCalculator{
         int row = myPosition.getRow();
         int column = myPosition.getColumn();
         Collection<ChessMove> moves = new ArrayList<>();
-        for (int[] move : KingMoves) {
+        for (int[] move : kingMoves) {
             if (row + move[0] <= 8 && row + move[0] > 0 && column + move[1] <= 8 && column + move[1] > 0) {
                 ChessPosition newPosition = new ChessPosition(row + move[0], column + move[1]);
                 if (board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() != team){
