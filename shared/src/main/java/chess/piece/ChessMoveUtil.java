@@ -5,9 +5,7 @@ import chess.*;
 import java.util.Collection;
 
 public class ChessMoveUtil {
-    /**
-     * Adds valid moves for a piece based on its possible moves.
-     */
+
     public static void addValidMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor team,
                                      int[][] possibleMoves, Collection<ChessMove> moves) {
         int row = myPosition.getRow();
