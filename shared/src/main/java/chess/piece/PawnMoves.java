@@ -1,7 +1,6 @@
 package chess.piece;
 
 import chess.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -15,53 +14,86 @@ public class PawnMoves implements ChessPieceCalculator {
         if (piece == null) {
             return moves;
         }
+
         ChessGame.TeamColor team = piece.getTeamColor();
         int forward         = (team == ChessGame.TeamColor.BLACK) ? -1 : 1;
         int startPosition   = (team == ChessGame.TeamColor.BLACK) ? 7  : 2;
         int promotePosition = (team == ChessGame.TeamColor.BLACK) ? 1  : 8;
 
+        addCaptureMoves(board, myPosition, team, forward, promotePosition, moves);
+
+        addForwardMoves(board, myPosition, forward, startPosition, promotePosition, moves);
+
+        return moves;
+    }
+
+    private void addCaptureMoves(ChessBoard board,
+                                 ChessPosition myPosition,
+                                 ChessGame.TeamColor team,
+                                 int forward,
+                                 int promotePosition,
+                                 Collection<ChessMove> moves) {
+
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
 
-        int[] captureOffsets = { -1, 1 };
+        int[] captureOffsets = {-1, 1};
         for (int offset : captureOffsets) {
             int targetRow = row + forward;
             int targetCol = col + offset;
-            if (isInBounds(targetRow, targetCol)) {
-                ChessPosition targetPos = new ChessPosition(targetRow, targetCol);
-                ChessPiece targetPiece = board.getPiece(targetPos);
-                if (targetPiece != null && targetPiece.getTeamColor() != team) {
-                    addMoveOrPromotion(myPosition, targetPos, promotePosition, moves);
-                }
+
+            if (!isInBounds(targetRow, targetCol)) {
+                continue;  // Skip out-of-bounds target
+            }
+
+            ChessPosition targetPos = new ChessPosition(targetRow, targetCol);
+            ChessPiece targetPiece = board.getPiece(targetPos);
+
+            if (targetPiece != null && targetPiece.getTeamColor() != team) {
+                addMoveOrPromotion(myPosition, targetPos, promotePosition, moves);
             }
         }
+    }
+
+    private void addForwardMoves(ChessBoard board,
+                                 ChessPosition myPosition,
+                                 int forward,
+                                 int startPosition,
+                                 int promotePosition,
+                                 Collection<ChessMove> moves) {
+
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
 
         int stepRow = row + forward;
-        if (isInBounds(stepRow, col)) {
-            ChessPosition stepPos = new ChessPosition(stepRow, col);
-            if (board.getPiece(stepPos) == null) {
-                addMoveOrPromotion(myPosition, stepPos, promotePosition, moves);
-                if (row == startPosition) {
-                    int doubleRow = row + 2 * forward;
-                    if (isInBounds(doubleRow, col)) {
-                        ChessPosition doublePos = new ChessPosition(doubleRow, col);
-                        if (board.getPiece(doublePos) == null) {
-                            addMoveOrPromotion(myPosition, doublePos, promotePosition, moves);
-                        }
+        if (!isInBounds(stepRow, col)) {
+            return;
+        }
+
+        ChessPosition stepPos = new ChessPosition(stepRow, col);
+        if (board.getPiece(stepPos) == null) {
+            addMoveOrPromotion(myPosition, stepPos, promotePosition, moves);
+
+            if (row == startPosition) {
+                int doubleRow = row + 2 * forward;
+                if (isInBounds(doubleRow, col)) {
+                    ChessPosition doublePos = new ChessPosition(doubleRow, col);
+                    if (board.getPiece(doublePos) == null) {
+                        addMoveOrPromotion(myPosition, doublePos, promotePosition, moves);
                     }
                 }
             }
         }
-
-        return moves;
     }
 
     private boolean isInBounds(int row, int col) {
         return (row >= 1 && row <= 8 && col >= 1 && col <= 8);
     }
 
-    private void addMoveOrPromotion(ChessPosition from, ChessPosition to,
-                                    int promoteRow, Collection<ChessMove> moves) {
+    private void addMoveOrPromotion(ChessPosition from,
+                                    ChessPosition to,
+                                    int promoteRow,
+                                    Collection<ChessMove> moves) {
         if (to.getRow() == promoteRow) {
             moves.add(new ChessMove(from, to, ChessPiece.PieceType.ROOK));
             moves.add(new ChessMove(from, to, ChessPiece.PieceType.BISHOP));
