@@ -206,9 +206,7 @@ public class ChessGame {
                 int colDiff = startPosition.getColumn() - move.getEndPosition().getColumn();
 
                 // Handle castling
-                if (isKing
-                        && (colDiff == -2 || colDiff == 2))
-                {
+                if (isKing && (colDiff == -2 || colDiff == 2)) {
                     chessBoard.addPiece(move.getEndPosition(), piece);
                     if (colDiff == 2) {
                         chessBoard.addPiece(
@@ -229,9 +227,7 @@ public class ChessGame {
                         chessBoard.addPiece(new ChessPosition(startPosition.getRow(), 8),
                                 null);
                     }
-                }
-                // Handle en passant
-                else if (piece.getPieceType() == ChessPiece.PieceType.PAWN
+                } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN
                         && enpassantPosition != null
                         && (move.getEndPosition().getColumn()
                         - move.getStartPosition().getColumn()) != 0
@@ -256,7 +252,14 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid move");
         }
 
-        // Disable castling if the king moves
+        updateCastlingRights(piece, move.getStartPosition());
+        updateEnPassant(piece, move);
+
+        this.teamTurn = (this.teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+    }
+
+    private void updateCastlingRights(ChessPiece piece, ChessPosition startPosition) {
+        // Disable castling entirely if the king moves
         if (piece.getPieceType() == ChessPiece.PieceType.KING) {
             if (piece.getTeamColor() == TeamColor.WHITE) {
                 whiteCastling = false;
@@ -265,45 +268,40 @@ public class ChessGame {
             }
         }
 
-        // Disable castling on relevant rook if it moves
+        // Disable castling for the specific rook if it moves
         if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
             if (startPosition.getRow() == 1
                     && piece.getTeamColor() == TeamColor.WHITE
-                    && (startPosition.getColumn() == 1
-                    || startPosition.getColumn() == 8))
+                    && (startPosition.getColumn() == 1 || startPosition.getColumn() == 8))
             {
                 if (startPosition.getColumn() == 1) {
                     whiteCastRook1 = false;
-                } else if (startPosition.getColumn() == 8) {
+                } else {
                     whiteCastRook2 = false;
                 }
             } else if (startPosition.getRow() == 8
                     && piece.getTeamColor() == TeamColor.BLACK
-                    && (startPosition.getColumn() == 1
-                    || startPosition.getColumn() == 8))
+                    && (startPosition.getColumn() == 1 || startPosition.getColumn() == 8))
             {
                 if (startPosition.getColumn() == 1) {
                     blackCastRook1 = false;
-                } else if (startPosition.getColumn() == 8) {
+                } else {
                     blackCastRook2 = false;
                 }
             }
         }
+    }
 
-        // Handle en passant availability
+    private void updateEnPassant(ChessPiece piece, ChessMove move) {
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+
         if (piece.getPieceType() == ChessPiece.PieceType.PAWN
-                && Math.abs(move.getEndPosition().getRow() - startPosition.getRow()) == 2)
-        {
-            enpassantPosition = new ChessPosition(move.getEndPosition().getRow(),
-                    move.getEndPosition().getColumn());
+                && Math.abs(end.getRow() - start.getRow()) == 2) {
+            enpassantPosition = new ChessPosition(end.getRow(), end.getColumn());
         } else {
             enpassantPosition = null;
         }
-
-        // Switch turn
-        this.teamTurn = (this.teamTurn == TeamColor.WHITE)
-                ? TeamColor.BLACK
-                : TeamColor.WHITE;
     }
 
     /**
