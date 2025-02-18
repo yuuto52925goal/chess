@@ -1,4 +1,4 @@
-package model.records;
+package model.data;
 
 import chess.ChessGame;
 

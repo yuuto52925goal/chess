@@ -1,4 +1,4 @@
-package model.records;
+package model.data;
 
 public record AuthData(String authToken, String username) {
 }
