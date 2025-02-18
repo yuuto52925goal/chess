@@ -1,4 +1,5 @@
 package server;
+import spark.Spark;
 
 public class ChessServer {
 
@@ -10,3 +11,4 @@ public class ChessServer {
         return this;
     }
 }
+
