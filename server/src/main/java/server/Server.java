@@ -10,7 +10,7 @@ public class Server {
         Spark.staticFiles.location("main/resources/web");
 
         // Register your endpoints and handle exceptions here.
-
+        Spark.get("/hello", (req, res) -> "hello world");
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
