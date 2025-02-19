@@ -11,6 +11,4 @@ public interface AuthDAO {
     public void deleteAuth(String username);
 
     public String createAuth(UserData user);
-
-    public String getUser(String token);
 }
