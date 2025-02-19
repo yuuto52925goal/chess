@@ -1,5 +1,6 @@
 package service;
 
-public class GameService {
+import dataaccess.AuthDAO;
 
+public class GameService {
 }

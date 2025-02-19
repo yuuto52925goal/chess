@@ -1,6 +1,6 @@
 package dataaccess;
 
-import model.data.UserData;
+import model.data.AuthData;
 
 public interface AuthDAO {
 
@@ -10,5 +10,5 @@ public interface AuthDAO {
 
     public void deleteAuth(String username);
 
-    public String createAuth(UserData user);
+    public String createAuth(String username);
 }

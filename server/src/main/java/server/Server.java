@@ -1,8 +1,16 @@
 package server;
 
+import handler.RegisterHandler;
+import service.UserService;
 import spark.*;
 
 public class Server {
+
+    private final UserService userService;
+
+    public Server(UserService userService) {
+        this.userService = userService;
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -10,7 +18,8 @@ public class Server {
         Spark.staticFiles.location("main/resources/web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.get("/hello", (req, res) -> "hello world");
+        Spark.post("/user", (req, res) -> new RegisterHandler(userService).handleRegister(req, res));
+//        Spark.post("/user", (req, res) -> userService.)
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
