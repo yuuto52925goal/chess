@@ -1,4 +1,4 @@
-package Handler;
+package handler;
 
 public interface Handler {
 }
