@@ -47,7 +47,7 @@ public class Server {
     public Object createGame(Request req, Response res){
         try{
             CreateGameRequest createGameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
-            if (userHandler.authCheck(createGameRequest.token()).isEmpty()) {
+            if (userHandler.authCheck(createGameRequest.token()) == null) {
                 res.status(401);
                 return new ErrorResponse("Error: unauthorized");
             }
@@ -67,7 +67,7 @@ public class Server {
     public Object listGames(Request req, Response res){
         try{
             ListGamesRequest listGamesRequest = new Gson().fromJson(req.body(), ListGamesRequest.class);
-            if (userHandler.authCheck(listGamesRequest.token()).isEmpty()) {
+            if (userHandler.authCheck(listGamesRequest.token()) == null) {
                 res.status(401);
                 return new ErrorResponse("Error: unauthorized");
             }
@@ -82,7 +82,7 @@ public class Server {
     public Object joinGame(Request req, Response res){
         try{
             JoinGameRequest joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
-            if (userHandler.authCheck(joinGameRequest.token()).isEmpty()) {
+            if (userHandler.authCheck(joinGameRequest.token()) == null) {
                 res.status(401);
                 return new ErrorResponse("Error: unauthorized");
             }
