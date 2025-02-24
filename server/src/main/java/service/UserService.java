@@ -61,6 +61,6 @@ public class UserService {
             return new ErrorResponse("Error: unauthorized");
         }
         authAccess.deleteAuth(user.username());
-        return new LogoutResult(token);
+        return new LogoutResult();
     }
 }

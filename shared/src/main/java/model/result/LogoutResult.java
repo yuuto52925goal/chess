@@ -1,4 +1,4 @@
 package model.result;
 
-public record LogoutResult(String token) {
+public record LogoutResult() {
 }
