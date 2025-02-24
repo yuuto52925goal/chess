@@ -5,8 +5,12 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import dataaccess.UserDAO;
 import model.data.UserData;
+import model.request.LoginRequest;
+import model.request.LogoutRequest;
 import model.request.RegisterRequest;
 import model.result.ErrorResponse;
+import model.result.LoginResult;
+import model.result.LogoutResult;
 import model.result.RegisterResult;
 
 public class UserService {
@@ -37,5 +41,26 @@ public class UserService {
         String newToken = authAccess.createAuth(username);
 
         return new RegisterResult(username, newToken);
+    }
+
+    public Object login(LoginRequest loginRequest) {
+        String username = loginRequest.username();
+        String password = loginRequest.password();
+
+        if (userAccess.getUser(username) != null || userAccess.getUser(username).password().equals(password)) {
+            return new ErrorResponse("Error: unauthorized");
+        }
+
+        return new LoginResult(username, authAccess.checkAuth(username));
+    }
+
+    public Object logout(LogoutRequest logoutRequest) {
+        String token = logoutRequest.token();
+        UserData user = userAccess.getUser(token);
+        if (user == null) {
+            return new ErrorResponse("Error: unauthorized");
+        }
+        authAccess.deleteAuth(user.username());
+        return new LogoutResult(token);
     }
 }
