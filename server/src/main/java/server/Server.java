@@ -10,6 +10,8 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
+import java.io.File;
+
 public class Server {
 
     private final UserService userService;
@@ -25,9 +27,13 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
-        Spark.staticFiles.location("main/resources/web");
+        Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.get("/", (req, res) -> {
+            res.redirect("/index.html");
+            return null;
+        });
         Spark.delete("/db", this::clearApp);
         Spark.post("/user", userHandler::handleRegister);
         Spark.post("/session", userHandler::handleLogin);

@@ -18,16 +18,16 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public String createGame(String gameName) {
-        String gameId = String.valueOf(games.size());
+    public int createGame(String gameName) {
+        int gameId = games.size() + 1;
         games.add(new GameData(gameId, "", "", gameName, null));
         return gameId;
     }
 
     @Override
-    public GameData findGame(String gameId) {
+    public GameData findGame(int gameId) {
         for (GameData gameData : games) {
-            if (gameData.gameID().equals(gameId)) {
+            if (gameData.gameID() == gameId) {
                 return gameData;
             }
         }
@@ -37,7 +37,7 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public void updateGame(GameData newGame) {
         for (int i = 0; i < games.size(); i++) {
-            if (games.get(i).gameID().equals(newGame.gameID())) {
+            if (games.get(i).gameID() == newGame.gameID()) {
                 games.set(i, newGame);
             }
         }

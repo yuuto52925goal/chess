@@ -8,9 +8,9 @@ public interface GameDAO {
 
     public ArrayList<GameData> listGames();
 
-    public String createGame(String gameName);
+    public int createGame(String gameName);
 
-    public GameData findGame(String gameName);
+    public GameData findGame(int gameId);
 
     public void updateGame(GameData game);
 

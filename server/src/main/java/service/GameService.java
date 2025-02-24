@@ -34,7 +34,8 @@ public class GameService {
 
     public Object joinGame(JoinGameRequest joinGameRequest, String username){
         GameData findGame = gameDAO.findGame(joinGameRequest.gameId());
-        if (findGame == null) {
+        String playerColor = joinGameRequest.playerColor();
+        if (findGame == null || (!playerColor.equals("BLACK") && !playerColor.equals("WHITE"))) {
             return new ErrorResponse("Error: bad request");
         }
         boolean checkTaken = Objects.equals(joinGameRequest.playerColor(), "BLACK") ? !findGame.blackUsername().isEmpty(): !findGame.whiteUsername().isEmpty();
