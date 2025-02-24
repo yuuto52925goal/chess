@@ -49,16 +49,16 @@ public class UserService {
         if (userAccess.getUser(username) == null || !userAccess.getUser(username).password().equals(password)) {
             return new ErrorResponse("Error: unauthorized");
         }
-        return new LoginResult(username, authAccess.checkAuth(username));
+        return new LoginResult(username, authAccess.createAuth(username));
     }
 
     public Object logout(LogoutRequest logoutRequest) {
         String token = logoutRequest.token();
-        UserData user = userAccess.getUser(token);
-        if (user == null) {
+        String username = authAccess.checkAuth(token);
+        if (username == null) {
             return new ErrorResponse("Error: unauthorized");
         }
-        authAccess.deleteAuth(user.username());
+        authAccess.deleteAuth(username);
         return new LogoutResult();
     }
 }
