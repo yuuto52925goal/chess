@@ -1,8 +1,9 @@
 package service;
 
-import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.MemoryGameDAO;
+import model.request.ListGamesRequest;
+import model.result.ListGamesResult;
 
 public class GameService {
 
@@ -11,6 +12,10 @@ public class GameService {
     public GameService() {
         gameDAO = new MemoryGameDAO();
     }
+
+//    public Object listGames(ListGamesRequest){
+//        return new ListGamesResult();
+//    }
 
 
 }

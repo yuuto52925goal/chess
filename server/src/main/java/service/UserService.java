@@ -46,11 +46,9 @@ public class UserService {
     public Object login(LoginRequest loginRequest) {
         String username = loginRequest.username();
         String password = loginRequest.password();
-
-        if (userAccess.getUser(username) != null || userAccess.getUser(username).password().equals(password)) {
+        if (userAccess.getUser(username) == null || !userAccess.getUser(username).password().equals(password)) {
             return new ErrorResponse("Error: unauthorized");
         }
-
         return new LoginResult(username, authAccess.checkAuth(username));
     }
 

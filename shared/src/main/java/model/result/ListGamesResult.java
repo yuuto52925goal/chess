@@ -1,4 +1,6 @@
 package model.result;
 
-public record ListGamesResult() {
+import model.data.GameData;
+
+public record ListGamesResult(GameData[] games) {
 }

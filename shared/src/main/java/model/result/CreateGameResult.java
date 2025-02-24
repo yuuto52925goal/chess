@@ -1,4 +1,4 @@
 package model.result;
 
-public record CreateGameResult(String token, String gameName) {
+public record CreateGameResult(String gamId) {
 }
