@@ -77,5 +77,7 @@ public class UserHandler {
         return userService.authCheck(token);
     }
 
-//    public void clear
+    public void clear(){
+        this.userService.userAuthClear();
+    }
 }

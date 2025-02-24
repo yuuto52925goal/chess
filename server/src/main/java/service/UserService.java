@@ -65,4 +65,9 @@ public class UserService {
     public String authCheck(String token) {
         return authAccess.checkAuth(token);
     }
+
+    public void userAuthClear(){
+        authAccess.deleteAllAuths();
+        userAccess.deleteAllUsers();
+    }
 }

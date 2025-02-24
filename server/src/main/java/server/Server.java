@@ -28,6 +28,7 @@ public class Server {
         Spark.staticFiles.location("main/resources/web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.delete("/db", this::clearApp);
         Spark.post("/user", userHandler::handleRegister);
         Spark.post("/session", userHandler::handleLogin);
         Spark.delete("/session", userHandler::handleLogout);
@@ -83,11 +84,11 @@ public class Server {
         try{
             String authToken  = req.headers("authorization");
             JoinGameRequest joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
-            if (userHandler.authCheck(authToken) == null) {
+            String username = userHandler.authCheck(authToken);
+            if (username == null) {
                 res.status(401);
                 return new ErrorResponse("Error: unauthorized");
             }
-            String username = userHandler.authCheck(authToken);
             Object result = gameService.joinGame(joinGameRequest, username);
             if (result instanceof ErrorResponse) {
                 if (((ErrorResponse) result).message().equals("Error: already taken")) {
@@ -106,16 +107,16 @@ public class Server {
         }
     }
 
-//    public Object clearApp(Response res){
-//        try{
-//            this.userHandler.
-//            res.status(200);
-//            return new Gson().toJson(new Object());
-//        }catch (Exception e){
-//            res.status(500);
-//            return new Gson().toJson(new ErrorResponse("Error: " + e.getMessage()));
-//        }
-//
-//    }
+    public Object clearApp(Request req, Response res){
+        try{
+            this.userHandler.clear();
+            this.gameService.gameClear();
+            res.status(200);
+            return new Gson().toJson(new Object());
+        }catch (Exception e){
+            res.status(500);
+            return new Gson().toJson(new ErrorResponse("Error: " + e.getMessage()));
+        }
+    }
 
 }

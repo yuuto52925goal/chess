@@ -47,4 +47,8 @@ public class GameService {
         return new JoinGameResult();
     }
 
+    public void gameClear(){
+        this.gameDAO.deleteGames();
+    }
+
 }
