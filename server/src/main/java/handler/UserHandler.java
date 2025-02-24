@@ -58,7 +58,7 @@ public class UserHandler {
 
     public Object handleLogout(Request request, Response response) {
         try{
-            LogoutRequest logoutRequest = new Gson().fromJson(request.body(), LogoutRequest.class);
+            LogoutRequest logoutRequest = new LogoutRequest(request.headers("authorization"));
             Object result = userService.logout(logoutRequest);
             if (result instanceof ErrorResponse) {
                 response.status(401);

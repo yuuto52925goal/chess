@@ -1,4 +1,4 @@
 package model.request;
 
-public record CreateGameRequest(String token, String gameName) {
+public record CreateGameRequest(String gameName) {
 }

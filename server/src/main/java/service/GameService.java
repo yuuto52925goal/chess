@@ -41,8 +41,8 @@ public class GameService {
         if (checkTaken) {
             return new ErrorResponse("Error: already taken");
         }
-        GameData newGameData = Objects.equals(joinGameRequest.playerColor(), "BLACK") ? new GameData(findGame.gameID(), "", username, findGame.gameName(), findGame.game()):
-                new GameData(findGame.gameID(), username, "", findGame.gameName(), findGame.game());
+        GameData newGameData = Objects.equals(joinGameRequest.playerColor(), "BLACK") ? new GameData(findGame.gameID(), findGame.whiteUsername(), username, findGame.gameName(), findGame.game()):
+                new GameData(findGame.gameID(), username, findGame.blackUsername(), findGame.gameName(), findGame.game());
         gameDAO.updateGame(newGameData);
         return new JoinGameResult();
     }

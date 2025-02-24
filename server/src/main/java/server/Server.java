@@ -47,9 +47,9 @@ public class Server {
     public Object createGame(Request req, Response res){
         try{
             CreateGameRequest createGameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
-            if (userHandler.authCheck(createGameRequest.token()) == null) {
+            if (userHandler.authCheck(req.headers("authorization")) == null) {
                 res.status(401);
-                return new ErrorResponse("Error: unauthorized");
+                return new Gson().toJson(new ErrorResponse("Error: unauthorized"));
             }
             Object result = gameService.createGame(createGameRequest);
             if (result instanceof ErrorResponse) {
@@ -66,7 +66,7 @@ public class Server {
 
     public Object listGames(Request req, Response res){
         try{
-            ListGamesRequest listGamesRequest = new Gson().fromJson(req.body(), ListGamesRequest.class);
+            ListGamesRequest listGamesRequest = new ListGamesRequest(req.headers("authorization"));
             if (userHandler.authCheck(listGamesRequest.token()) == null) {
                 res.status(401);
                 return new ErrorResponse("Error: unauthorized");
@@ -81,12 +81,13 @@ public class Server {
 
     public Object joinGame(Request req, Response res){
         try{
+            String authToken  = req.headers("authorization");
             JoinGameRequest joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
-            if (userHandler.authCheck(joinGameRequest.token()) == null) {
+            if (userHandler.authCheck(authToken) == null) {
                 res.status(401);
                 return new ErrorResponse("Error: unauthorized");
             }
-            String username = userHandler.authCheck(joinGameRequest.token());
+            String username = userHandler.authCheck(authToken);
             Object result = gameService.joinGame(joinGameRequest, username);
             if (result instanceof ErrorResponse) {
                 if (((ErrorResponse) result).message().equals("Error: already taken")) {
