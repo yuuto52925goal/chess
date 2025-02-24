@@ -8,7 +8,7 @@ public interface GameDAO {
 
     public ArrayList<GameData> listGames();
 
-    public int createGame(String gameName);
+    public String createGame(String gameName);
 
     public GameData findGame(String gameName);
 

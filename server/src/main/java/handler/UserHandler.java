@@ -72,4 +72,10 @@ public class UserHandler {
             return new Gson().toJson(new ErrorResponse("Error: " + e.getMessage()));
         }
     }
+
+    public String authCheck(String token){
+        return userService.authCheck(token);
+    }
+
+//    public void clear
 }

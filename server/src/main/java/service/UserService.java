@@ -61,4 +61,8 @@ public class UserService {
         authAccess.deleteAuth(username);
         return new LogoutResult();
     }
+
+    public String authCheck(String token) {
+        return authAccess.checkAuth(token);
+    }
 }
