@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.GameDAO;
 import dataaccess.MemoryGameDAO;
 import model.data.GameData;
@@ -33,16 +34,17 @@ public class GameService {
     }
 
     public Object joinGame(JoinGameRequest joinGameRequest, String username){
-        GameData findGame = gameDAO.findGame(joinGameRequest.gameId());
+        GameData findGame = gameDAO.findGame(joinGameRequest.gameId() + 1);
         String playerColor = joinGameRequest.playerColor();
-        if (findGame == null || (!playerColor.equals("BLACK") && !playerColor.equals("WHITE"))) {
+        if (findGame == null || playerColor == null ||(!playerColor.equals("BLACK") && !playerColor.equals("WHITE"))){
             return new ErrorResponse("Error: bad request");
         }
-        boolean checkTaken = Objects.equals(joinGameRequest.playerColor(), "BLACK") ? !findGame.blackUsername().isEmpty(): !findGame.whiteUsername().isEmpty();
+        boolean checkTaken = Objects.equals(playerColor, "BLACK") ? findGame.blackUsername() != null: findGame.whiteUsername() != null;
         if (checkTaken) {
             return new ErrorResponse("Error: already taken");
         }
-        GameData newGameData = Objects.equals(joinGameRequest.playerColor(), "BLACK") ? new GameData(findGame.gameID(), findGame.whiteUsername(), username, findGame.gameName(), findGame.game()):
+        GameData newGameData = Objects.equals(playerColor, "BLACK") ?
+                new GameData(findGame.gameID(), findGame.whiteUsername(), username, findGame.gameName(), findGame.game()):
                 new GameData(findGame.gameID(), username, findGame.blackUsername(), findGame.gameName(), findGame.game());
         gameDAO.updateGame(newGameData);
         return new JoinGameResult();

@@ -10,8 +10,6 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
-import java.io.File;
-
 public class Server {
 
     private final UserService userService;
@@ -93,13 +91,13 @@ public class Server {
             String username = userHandler.authCheck(authToken);
             if (username == null) {
                 res.status(401);
-                return new ErrorResponse("Error: unauthorized");
+                return new Gson().toJson(new ErrorResponse("Error: unauthorized"));
             }
             Object result = gameService.joinGame(joinGameRequest, username);
             if (result instanceof ErrorResponse) {
                 if (((ErrorResponse) result).message().equals("Error: already taken")) {
                     res.status(403);
-                    return new ErrorResponse("Error: already taken");
+                    return new Gson().toJson(new ErrorResponse("Error: already taken"));
                 }else{
                     res.status(400);
                     return new Gson().toJson(result);
