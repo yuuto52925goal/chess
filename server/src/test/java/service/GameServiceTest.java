@@ -81,6 +81,9 @@ public class GameServiceTest {
     @Test
     void gameClear(){
         gameService.gameClear();
-        Assertions.assertEquals(((ListGamesResult)new GameService().listGames()).games().length, ((ListGamesResult)gameService.listGames()).games().length);
+        Assertions.assertEquals(
+                ((ListGamesResult)new GameService().listGames()).games().length,
+                ((ListGamesResult)gameService.listGames()).games().length
+        );
     }
 }
