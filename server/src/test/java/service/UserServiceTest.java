@@ -21,7 +21,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void register_Success(){
+    void registerSuccess(){
         RegisterRequest registerRequest = new RegisterRequest("testUser", "password", "test@email.com");
         Object result = userService.register(registerRequest);
 
@@ -31,7 +31,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void register_Fail_taken(){
+    void registerFailTaken(){
         RegisterRequest registerRequest = new RegisterRequest("testUser", "password", "test@email.com");
         userService.register(registerRequest);
         Object result2 = userService.register(registerRequest);
@@ -39,14 +39,14 @@ public class UserServiceTest {
     }
 
     @Test
-    void register_Fail_null(){
+    void registerFailNull(){
         RegisterRequest registerRequest = new RegisterRequest("testUser", null, "test@email.com");
         Object result = userService.register(registerRequest);
         Assertions.assertEquals("Error: bad request", ((ErrorResponse) result).message());
     }
 
     @Test
-    void login_Success(){
+    void loginSuccess(){
         RegisterRequest registerRequest = new RegisterRequest("testUser", "password", "test@email.com");
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("testUser", "password");
@@ -57,7 +57,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void login_Fail(){
+    void loginFail(){
         RegisterRequest registerRequest = new RegisterRequest("testUser", "password", "test@email.com");
         userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("testUser", "password-password");
@@ -66,7 +66,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void logout_Success(){
+    void logoutSuccess(){
         RegisterRequest registerRequest = new RegisterRequest("testUser", "password", "test@email.com");
         Object result1 = userService.register(registerRequest);
         RegisterResult registerResult = (RegisterResult) result1;
@@ -79,7 +79,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void logout_Fail(){
+    void logoutFail(){
         RegisterRequest registerRequest = new RegisterRequest("testUser", "password", "test@email.com");
         Object result1 = userService.register(registerRequest);
         RegisterResult registerResult = (RegisterResult) result1;
