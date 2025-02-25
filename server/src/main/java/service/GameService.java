@@ -34,7 +34,8 @@ public class GameService {
     }
 
     public Object joinGame(JoinGameRequest joinGameRequest, String username){
-        GameData findGame = gameDAO.findGame(joinGameRequest.gameId() + 10);
+        GameData findGame = gameDAO.findGame(joinGameRequest.gameID());
+        System.out.println(joinGameRequest.gameID());
         String playerColor = joinGameRequest.playerColor();
         if (findGame == null || playerColor == null ||
                 (!playerColor.equals("BLACK") && !playerColor.equals("WHITE"))){
@@ -47,6 +48,7 @@ public class GameService {
         GameData newGameData = Objects.equals(playerColor, "BLACK") ?
                 new GameData(findGame.gameID(), findGame.whiteUsername(), username, findGame.gameName(), findGame.game()):
                 new GameData(findGame.gameID(), username, findGame.blackUsername(), findGame.gameName(), findGame.game());
+        System.out.println(newGameData);
         gameDAO.updateGame(newGameData);
         return new JoinGameResult();
     }
