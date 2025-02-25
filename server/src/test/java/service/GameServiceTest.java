@@ -41,7 +41,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void testCreateGame_Failure(){
+    void createGame_Failure(){
         CreateGameRequest request = new CreateGameRequest("");
         Object result = gameService.createGame(request);
         Assertions.assertInstanceOf(ErrorResponse.class, result);
@@ -49,7 +49,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void testJoinGame_Success(){
+    void joinGame_Success(){
         CreateGameRequest createRequest = new CreateGameRequest("TestGame");
         gameService.createGame(createRequest);
 
@@ -63,7 +63,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void testJoinGame_Failure(){
+    void joinGame_Failure(){
         CreateGameRequest createRequest = new CreateGameRequest("TestGame");
         gameService.createGame(createRequest);
 
@@ -79,7 +79,7 @@ public class GameServiceTest {
     }
 
     @Test
-    void testGameClear(){
+    void gameClear(){
         gameService.gameClear();
         Assertions.assertEquals(((ListGamesResult)new GameService().listGames()).games().length, ((ListGamesResult)gameService.listGames()).games().length);
     }
