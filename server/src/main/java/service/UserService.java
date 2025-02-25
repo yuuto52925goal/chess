@@ -58,7 +58,7 @@ public class UserService {
         if (username == null) {
             return new ErrorResponse("Error: unauthorized");
         }
-        authAccess.deleteAuth(username);
+        authAccess.deleteAuth(token);
         return new LogoutResult();
     }
 

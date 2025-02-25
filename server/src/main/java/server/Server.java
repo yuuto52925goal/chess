@@ -74,7 +74,7 @@ public class Server {
             ListGamesRequest listGamesRequest = new ListGamesRequest(req.headers("authorization"));
             if (userHandler.authCheck(listGamesRequest.token()) == null) {
                 res.status(401);
-                return new ErrorResponse("Error: unauthorized");
+                return new Gson().toJson(new ErrorResponse("Error: unauthorized"));
             }
             Object result = gameService.listGames();
             return new Gson().toJson(result);

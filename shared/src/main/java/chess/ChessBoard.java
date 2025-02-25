@@ -93,8 +93,6 @@ public class ChessBoard {
                         return false;
                     }
                     if (chessPieces[i][j].getTeamColor() != that.getPiece(position).getTeamColor()){
-                        System.out.println(chessPieces[i][j].getTeamColor());
-                        System.out.println(that.getPiece(position).getTeamColor());
                         return false;
                     }
                 }
