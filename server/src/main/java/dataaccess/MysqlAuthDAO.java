@@ -39,12 +39,12 @@ public class MysqlAuthDAO extends Mysql  implements AuthDAO {
 
     public void deleteAllAuths() {
         String statement = "DELETE FROM auth";
-        executeUpdate(statement);
+        this.executeUpdate(statement);
     }
 
     public void deleteAuth(String authToken) {
         String statement = "DELETE FROM auth WHERE authToken = ?";
-        int rowsDeleted = executeUpdate(statement, authToken);
+        int rowsDeleted = this.executeUpdate(statement, authToken);
         if (rowsDeleted > 0){
             System.out.println("Deleted " + rowsDeleted + " rows from " + authToken);
         }else{
@@ -59,29 +59,7 @@ public class MysqlAuthDAO extends Mysql  implements AuthDAO {
         return newAuthToken;
     }
 
-    private int executeUpdate(String statement, Object... args) {
-        try(var conn = DatabaseManager.getConnection()){
-            try(var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)){
-                for (var i = 0; i < args.length; i++) {
-                    var arg = args[i];
-                    if (arg instanceof String) ps.setString(i + 1, (String) arg);
-                }
-                ps.executeUpdate();
 
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-                return 0;
-            }catch (SQLException e){
-                System.out.println(e.getMessage());
-                return 0;
-            }
-        }catch (SQLException | DataAccessException e){
-            System.out.println(e.getMessage());
-            return 0;
-        }
-    }
 
     private final String[] createStatements = {
             """
