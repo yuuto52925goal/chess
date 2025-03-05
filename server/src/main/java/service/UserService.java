@@ -19,7 +19,7 @@ public class UserService {
 
     public UserService() {
         authAccess = new MysqlAuthDAO();
-        userAccess = new MemoryUserDAO();
+        userAccess = new MysqlUserDAO();
     }
 
     public Object register(RegisterRequest registerRequest) {
@@ -49,7 +49,7 @@ public class UserService {
             String passwordOrigin = userAccess.getUser(username).password();
             if (passwordOrigin.startsWith("$2a$") || passwordOrigin.startsWith("$2b$")|| passwordOrigin.startsWith("$2y$")) {
                 if (!BCrypt.checkpw(password, passwordOrigin)) {
-                    return new ErrorResponse("Error: bad request");
+                    return new ErrorResponse("Error: unauthorized");
                 }
             }else if (!passwordOrigin.equals(password)){
                 return new ErrorResponse("Error: unauthorized");

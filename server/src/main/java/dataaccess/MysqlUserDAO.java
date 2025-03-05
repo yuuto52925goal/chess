@@ -47,7 +47,7 @@ public class MysqlUserDAO extends Mysql implements UserDAO{
 
     @Override
     public void deleteAllUsers() {
-        String statement = "DELETE FROM users";
+        String statement = "DELETE FROM user";
         this.executeUpdate(statement);
     }
 

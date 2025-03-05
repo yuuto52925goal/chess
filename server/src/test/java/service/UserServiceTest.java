@@ -18,6 +18,7 @@ public class UserServiceTest {
     @BeforeEach
     void setUp() {
         userService = new UserService();
+        userService.userAuthClear();
     }
 
     @Test
