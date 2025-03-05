@@ -17,7 +17,7 @@ public class UserService {
     private UserDAO userAccess;
 
     public UserService() {
-        authAccess = new MemoryAuthDAO();
+        authAccess = new MysqlAuthDAO();
         userAccess = new MemoryUserDAO();
     }
 

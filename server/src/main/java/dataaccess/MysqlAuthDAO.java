@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.util.UUID;
 
-public class MysqlAuthDAO extends Mysql  {
+public class MysqlAuthDAO extends Mysql  implements AuthDAO {
 
     public MysqlAuthDAO() {
         try{
@@ -21,13 +21,13 @@ public class MysqlAuthDAO extends Mysql  {
     }
     public String checkAuth(String authToken) {
 
+        String statement = "SELECT authToken, username FROM auth WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection()){
-            String statement = "SELECT authToken FROM auth WHERE authToken = ?";
             try (PreparedStatement stmt = conn.prepareStatement(statement)){
                 stmt.setString(1, authToken);
                 try (ResultSet rs = stmt.executeQuery()){
                     if (rs.next()){
-                        return rs.getString("authToken");
+                        return rs.getString("username");
                     }
                 }
             }
@@ -42,21 +42,20 @@ public class MysqlAuthDAO extends Mysql  {
         executeUpdate(statement);
     }
 
-    public void deleteAuth(String username) {
-        String statement = "DELETE FROM auth WHERE username = ?";
-        int rowsDeleted = executeUpdate(statement, username);
+    public void deleteAuth(String authToken) {
+        String statement = "DELETE FROM auth WHERE authToken = ?";
+        int rowsDeleted = executeUpdate(statement, authToken);
         if (rowsDeleted > 0){
-            System.out.println("Deleted " + rowsDeleted + " rows from " + username);
+            System.out.println("Deleted " + rowsDeleted + " rows from " + authToken);
         }else{
-            System.out.println("No rows deleted from " + username);
+            System.out.println("No rows deleted from " + authToken);
         }
     }
 
     public String createAuth(String username){
         String newAuthToken = UUID.randomUUID().toString();
         var statement = "INSERT INTO auth (username, authToken) VALUES (?, ?)";
-        var json = new Gson().toJson(new AuthData(username, newAuthToken));
-        executeUpdate(statement, json);
+        executeUpdate(statement, username, newAuthToken);
         return newAuthToken;
     }
 
