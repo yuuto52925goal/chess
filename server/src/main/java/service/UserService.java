@@ -22,7 +22,7 @@ public class UserService {
         userAccess = new MemoryUserDAO();
     }
 
-    public Object register(RegisterRequest registerRequest) {
+    public Object register(RegisterRequest registerRequest) throws SQLException {
         String username = registerRequest.username();
         String password = registerRequest.password();
         String email = registerRequest.email();
@@ -42,7 +42,7 @@ public class UserService {
         return new RegisterResult(username, newToken);
     }
 
-    public Object login(LoginRequest loginRequest) {
+    public Object login(LoginRequest loginRequest) throws SQLException {
         String username = loginRequest.username();
         String password = loginRequest.password();
         if (userAccess.getUser(username) == null || !userAccess.getUser(username).password().equals(password)) {
@@ -51,7 +51,7 @@ public class UserService {
         return new LoginResult(username, authAccess.createAuth(username));
     }
 
-    public Object logout(LogoutRequest logoutRequest) {
+    public Object logout(LogoutRequest logoutRequest) throws SQLException, DataAccessException {
         String token = logoutRequest.token();
         String username = authAccess.checkAuth(token);
         if (username == null) {
@@ -61,7 +61,7 @@ public class UserService {
         return new LogoutResult();
     }
 
-    public String authCheck(String token) {
+    public String authCheck(String token) throws SQLException, DataAccessException {
         return authAccess.checkAuth(token);
     }
 

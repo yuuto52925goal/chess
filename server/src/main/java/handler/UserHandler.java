@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import model.request.LoginRequest;
 import model.request.LogoutRequest;
 import model.request.RegisterRequest;
@@ -8,6 +9,8 @@ import model.result.ErrorResponse;
 import service.UserService;
 import spark.Request;
 import spark.Response;
+
+import java.sql.SQLException;
 
 public class UserHandler {
     private final UserService userService;
@@ -73,7 +76,7 @@ public class UserHandler {
         }
     }
 
-    public String authCheck(String token){
+    public String authCheck(String token) throws SQLException, DataAccessException {
         return userService.authCheck(token);
     }
 
