@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import model.data.UserData;
 import model.request.LoginRequest;
 import model.request.LogoutRequest;
@@ -13,13 +10,15 @@ import model.result.LoginResult;
 import model.result.LogoutResult;
 import model.result.RegisterResult;
 
+import java.sql.SQLException;
+
 public class UserService {
 
     private AuthDAO authAccess;
     private UserDAO userAccess;
 
-    public UserService() {
-        authAccess = new MemoryAuthDAO();
+    public UserService() throws SQLException, DataAccessException {
+        authAccess = new MysqlAuthDAO();
         userAccess = new MemoryUserDAO();
     }
 

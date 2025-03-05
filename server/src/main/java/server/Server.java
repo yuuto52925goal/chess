@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import handler.UserHandler;
 import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
@@ -10,13 +11,15 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
+import java.sql.SQLException;
+
 public class Server {
 
     private final UserService userService;
     private final UserHandler userHandler;
     private final GameService gameService;
 
-    public Server() {
+    public Server() throws SQLException, DataAccessException {
         this.userService = new UserService();
         userHandler = new UserHandler(userService);
         gameService = new GameService();
