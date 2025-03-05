@@ -9,6 +9,7 @@ import model.result.ErrorResponse;
 import model.result.LoginResult;
 import model.result.LogoutResult;
 import model.result.RegisterResult;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 public class UserService {
@@ -44,7 +45,16 @@ public class UserService {
     public Object login(LoginRequest loginRequest)  {
         String username = loginRequest.username();
         String password = loginRequest.password();
-        if (userAccess.getUser(username) == null || !userAccess.getUser(username).password().equals(password)) {
+        if (userAccess.getUser(username) != null) {
+            String passwordOrigin = userAccess.getUser(username).password();
+            if (passwordOrigin.startsWith("$2a$") || passwordOrigin.startsWith("$2b$")|| passwordOrigin.startsWith("$2y$")) {
+                if (!BCrypt.checkpw(password, passwordOrigin)) {
+                    return new ErrorResponse("Error: bad request");
+                }
+            }else if (!passwordOrigin.equals(password)){
+                return new ErrorResponse("Error: unauthorized");
+            }
+        }else{
             return new ErrorResponse("Error: unauthorized");
         }
         return new LoginResult(username, authAccess.createAuth(username));

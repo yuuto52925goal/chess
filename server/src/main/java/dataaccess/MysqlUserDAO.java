@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.data.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 
@@ -18,17 +19,36 @@ public class MysqlUserDAO extends Mysql implements UserDAO{
 
     @Override
     public UserData getUser(String username) {
+        String statement = "SELECT password, email FROM user WHERE username = ?";
+        try(var conn = DatabaseManager.getConnection()){
+            try(var stmt = conn.prepareStatement(statement)){
+                stmt.setString(1, username);
+                try(var rs = stmt.executeQuery()){
+                    if(rs.next()){
+                        String hashedPassword = rs.getString("password");
+                        String email = rs.getString("email");
+                        return new UserData(username, hashedPassword, email);
+                    }
+                }
+            }
+        }catch (DataAccessException | SQLException e){
+            System.out.println(e.getMessage());
+        }
         return null;
     }
 
     @Override
     public UserData createUser(UserData user) {
-        return null;
+        String statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+        String hashPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+        executeUpdate(statement, user.username(), hashPassword, user.email());
+        return user;
     }
 
     @Override
     public void deleteAllUsers() {
-
+        String statement = "DELETE FROM users";
+        this.executeUpdate(statement);
     }
 
     private final String[] createStatements ={
