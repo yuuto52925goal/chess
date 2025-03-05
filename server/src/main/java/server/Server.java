@@ -19,7 +19,7 @@ public class Server {
     private final UserHandler userHandler;
     private final GameService gameService;
 
-    public Server() throws SQLException, DataAccessException {
+    public Server() {
         this.userService = new UserService();
         userHandler = new UserHandler(userService);
         gameService = new GameService();

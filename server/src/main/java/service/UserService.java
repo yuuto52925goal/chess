@@ -10,19 +10,18 @@ import model.result.LoginResult;
 import model.result.LogoutResult;
 import model.result.RegisterResult;
 
-import java.sql.SQLException;
 
 public class UserService {
 
     private AuthDAO authAccess;
     private UserDAO userAccess;
 
-    public UserService() throws SQLException, DataAccessException {
-        authAccess = new MysqlAuthDAO();
+    public UserService() {
+        authAccess = new MemoryAuthDAO();
         userAccess = new MemoryUserDAO();
     }
 
-    public Object register(RegisterRequest registerRequest) throws SQLException {
+    public Object register(RegisterRequest registerRequest) {
         String username = registerRequest.username();
         String password = registerRequest.password();
         String email = registerRequest.email();
@@ -42,7 +41,7 @@ public class UserService {
         return new RegisterResult(username, newToken);
     }
 
-    public Object login(LoginRequest loginRequest) throws SQLException {
+    public Object login(LoginRequest loginRequest)  {
         String username = loginRequest.username();
         String password = loginRequest.password();
         if (userAccess.getUser(username) == null || !userAccess.getUser(username).password().equals(password)) {
@@ -51,7 +50,7 @@ public class UserService {
         return new LoginResult(username, authAccess.createAuth(username));
     }
 
-    public Object logout(LogoutRequest logoutRequest) throws SQLException, DataAccessException {
+    public Object logout(LogoutRequest logoutRequest)  {
         String token = logoutRequest.token();
         String username = authAccess.checkAuth(token);
         if (username == null) {
@@ -61,7 +60,7 @@ public class UserService {
         return new LogoutResult();
     }
 
-    public String authCheck(String token) throws SQLException, DataAccessException {
+    public String authCheck(String token)  {
         return authAccess.checkAuth(token);
     }
 

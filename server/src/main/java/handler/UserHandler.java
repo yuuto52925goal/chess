@@ -76,7 +76,7 @@ public class UserHandler {
         }
     }
 
-    public String authCheck(String token) throws SQLException, DataAccessException {
+    public String authCheck(String token) {
         return userService.authCheck(token);
     }
 
