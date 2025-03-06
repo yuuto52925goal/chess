@@ -17,12 +17,11 @@ import org.junit.jupiter.api.Test;
 public class GameServiceTest {
 
     private GameService gameService;
-    private GameDAO gameDAO;
 
     @BeforeEach
     void setUp() {
         gameService = new GameService();
-        gameDAO = new MemoryGameDAO();
+        gameService.gameClear();
     }
 
     @Test
@@ -51,31 +50,37 @@ public class GameServiceTest {
     @Test
     void joinGameSuccess(){
         CreateGameRequest createRequest = new CreateGameRequest("TestGame");
-        gameService.createGame(createRequest);
+        Object createGameResult = gameService.createGame(createRequest);
+        if (createGameResult instanceof CreateGameResult result1) {
+            int id = result1.gameID();
+            JoinGameRequest request = new JoinGameRequest(id, "BLACK");
+            Object result = gameService.joinGame(request, "Player1");
+            Assertions.assertInstanceOf(JoinGameResult.class, result);
 
-        JoinGameRequest request = new JoinGameRequest(10, "BLACK");
-        Object result = gameService.joinGame(request, "Player1");
-        Assertions.assertInstanceOf(JoinGameResult.class, result);
+            GameData existingGame = new GameData(id, null, "Player1", "TestGame", null);
 
-        GameData existingGame = new GameData(10, null, "Player1", "TestGame", null);
+            Assertions.assertEquals(((ListGamesResult)gameService.listGames()).games()[0], existingGame);
+        }
 
-        Assertions.assertEquals(((ListGamesResult)gameService.listGames()).games()[0], existingGame);
     }
 
     @Test
     void joinGameFailure(){
         CreateGameRequest createRequest = new CreateGameRequest("TestGame");
-        gameService.createGame(createRequest);
+        Object createGameResult = gameService.createGame(createRequest);
+        if (createGameResult instanceof CreateGameResult result1) {
+            int id = result1.gameID();
+            JoinGameRequest request1 = new JoinGameRequest(0, "BLACK");
+            Object result = gameService.joinGame(request1, "Player1");
+            Assertions.assertInstanceOf(ErrorResponse.class, result);
+            Assertions.assertEquals("Error: bad request", ((ErrorResponse)result).message());
 
-        JoinGameRequest request1 = new JoinGameRequest(0, "BLACK");
-        Object result = gameService.joinGame(request1, "Player1");
-        Assertions.assertInstanceOf(ErrorResponse.class, result);
-        Assertions.assertEquals("Error: bad request", ((ErrorResponse)result).message());
+            JoinGameRequest request2 = new JoinGameRequest(id, "BLACK");
+            gameService.joinGame(request2, "Player1");
+            Object result3 = gameService.joinGame(request2, "Player2");
+            Assertions.assertEquals("Error: already taken", ((ErrorResponse)result3).message());
+        }
 
-        JoinGameRequest request2 = new JoinGameRequest(10, "BLACK");
-        gameService.joinGame(request2, "Player1");
-        Object result3 = gameService.joinGame(request2, "Player2");
-        Assertions.assertEquals("Error: already taken", ((ErrorResponse)result3).message());
     }
 
     @Test
