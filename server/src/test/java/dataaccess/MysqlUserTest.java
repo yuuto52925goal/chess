@@ -40,7 +40,7 @@ public class MysqlUserTest {
     }
 
     @Test
-    void testCreateUserDuplicateUsername_Negative() {
+    void testCreateUserDuplicateUsernameNegative() {
         String username1 = "user1";
         String username2 = "user2";
         String password = "password1";
