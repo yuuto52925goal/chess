@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.data.UserData;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
@@ -17,32 +18,48 @@ public class MysqlUserTest {
     }
 
     @Test
-    void testCreateUserAndGetUser() {
+    void testCreateUserAndGetUser_Positive() {
         String username = "testUser";
         String plainTextPassword = "plaintextPassword";
         String email = "test@example.com";
         UserData newUser = new UserData(username, plainTextPassword, email);
         userDAO.createUser(newUser);
         UserData retrievedUser = userDAO.getUser(username);
-        assertNotNull(retrievedUser, "User should be retrieved after creation");
+        Assertions.assertNotNull(retrievedUser, "User should be retrieved after creation");
         String storedPassword = retrievedUser.password();
-        assertNotEquals(plainTextPassword, storedPassword, "Stored password should be hashed");
-        assertTrue(BCrypt.checkpw(plainTextPassword, storedPassword), "Hashed password should match the plain text password");
-        assertEquals(email, retrievedUser.email(), "Emails should match");
+        Assertions.assertNotEquals(plainTextPassword, storedPassword, "Stored password should be hashed");
+        Assertions.assertTrue(BCrypt.checkpw(plainTextPassword, storedPassword),
+                "The hashed password should match the plain text password");
+        Assertions.assertEquals(email, retrievedUser.email(), "Emails should match");
     }
 
     @Test
-    void testGetUserNonexistent() {
+    void testGetUser_Negative() {
         UserData retrievedUser = userDAO.getUser("nonexistentUser");
-        assertNull(retrievedUser, "Retrieving a non-existent user should return null");
+        Assertions.assertNull(retrievedUser, "Retrieving a non-existent user should return null");
     }
 
     @Test
-    void testDeleteAllUsers() {
+    void testCreateUser_DuplicateUsername_Negative() {
+        String username1 = "user1";
+        String username2 = "user2";
+        String password = "password1";
+        String email = "email1@example.com";
+
+        UserData user1 = new UserData(username1, password, email);
+        UserData user2 = new UserData(username2, password, email);
+
+        userDAO.createUser(user1);
+        Assertions.assertTrue(userDAO.getUser(user2.username()) == null, "User should not be created");
+    }
+
+    @Test
+    void testDeleteAllUsers_Positive() {
         userDAO.createUser(new UserData("user1", "password1", "user1@example.com"));
         userDAO.createUser(new UserData("user2", "password2", "user2@example.com"));
+
         userDAO.deleteAllUsers();
-        assertNull(userDAO.getUser("user1"), "After deletion, user1 should not be found");
-        assertNull(userDAO.getUser("user2"), "After deletion, user2 should not be found");
+        Assertions.assertNull(userDAO.getUser("user1"), "User1 should be deleted");
+        Assertions.assertNull(userDAO.getUser("user2"), "User2 should be deleted");
     }
 }

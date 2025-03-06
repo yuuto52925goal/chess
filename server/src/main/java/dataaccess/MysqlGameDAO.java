@@ -43,6 +43,9 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
     @Override
     public int createGame(String gameName) {
         String statement = "INSERT INTO game (gameName) VALUES (?)";
+        if (gameName == null || gameName.isEmpty()) {
+            return -1;
+        }
         this.executeUpdate(statement, gameName);
         String query = "SELECT gameID FROM game WHERE gameName = ?";
         try (var conn = DatabaseManager.getConnection()){
