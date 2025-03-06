@@ -22,7 +22,9 @@ public class Mysql {
             try(var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)){
                 for (var i = 0; i < args.length; i++) {
                     var arg = args[i];
-                    if (arg instanceof String) ps.setString(i + 1, (String) arg);
+                    if (arg instanceof String) {
+                        ps.setString(i + 1, (String) arg);
+                    }
                 }
                 ps.executeUpdate();
 
