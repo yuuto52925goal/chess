@@ -17,20 +17,20 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
         }
     }
 
+//    Need to be edited in the future
     @Override
     public ArrayList<GameData> listGames() {
-        String statement = "SELECT * FROM games";
+        String statement = "SELECT * FROM game";
         ArrayList<GameData> games = new ArrayList<>();
         try(var conn = DatabaseManager.getConnection()){
             try(var stmt = conn.prepareStatement(statement)){
                 try(var rs = stmt.executeQuery()){
                     while(rs.next()){
-                        int gameId = rs.getInt("gameId");
+                        int gameId = rs.getInt("gameID");
                         String whiteUsername = rs.getString("whiteUsername");
                         String blackUsername = rs.getString("blackUsername");
                         String gameName = rs.getString("gameName");
-                        ChessGame game = rs.getObject("game", ChessGame.class);
-                        games.add(new GameData(gameId, whiteUsername, blackUsername, gameName, game));
+                        games.add(new GameData(gameId, whiteUsername, blackUsername, gameName, null));
                     }
                 }
             }
@@ -42,14 +42,15 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
 
     @Override
     public int createGame(String gameName) {
-        String statement = "INSERT INTO games (gameName) VALUES (?)";
+        String statement = "INSERT INTO game (gameName) VALUES (?)";
         this.executeUpdate(statement, gameName);
-        String query = "SELECT gameId FROM games WHERE gameName = ?";
+        String query = "SELECT gameID FROM game WHERE gameName = ?";
         try (var conn = DatabaseManager.getConnection()){
             try (var stmt = conn.prepareStatement(query)){
+                stmt.setString(1, gameName);
                 try(var res = stmt.executeQuery()){
                     if(res.next()){
-                        return res.getInt("gameId");
+                        return res.getInt("gameID");
                     }
                 }
             }
@@ -59,6 +60,7 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
         return -1;
     }
 
+//    Needed to be edited for future
     @Override
     public GameData findGame(int gameId) {
         String statement = "SELECT * FROM game WHERE gameID = ?";
@@ -70,8 +72,7 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
                         String gameName = rs.getString("gameName");
                         String whiteUser = rs.getString("whiteUsername");
                         String blackUser = rs.getString("blackUsername");
-                        ChessGame game = rs.getObject("game", ChessGame.class);
-                        return new GameData(gameId, whiteUser, blackUser, gameName, game);
+                        return new GameData(gameId, whiteUser, blackUser, gameName, null);
                     }
                 }
             }
@@ -81,26 +82,38 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
         return null;
     }
 
+//    Needed to be edited in the future
     @Override
     public void updateGame(GameData game) {
-
+        String statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ? WHERE gameID = ?";
+        try(var conn = DatabaseManager.getConnection()){
+            try (var stmt = conn.prepareStatement(statement)) {
+                System.out.println(game.gameID()+ " " + game.whiteUsername() + " " + game.blackUsername() + " " + game.gameName());
+                stmt.setString(1, game.whiteUsername());
+                stmt.setString(2, game.blackUsername());
+                stmt.setString(3, game.gameName());
+                stmt.setInt(4, game.gameID());
+                stmt.executeUpdate();
+            }
+        }catch (SQLException | DataAccessException e){
+            System.out.println("SQLException: " + e.getMessage());
+        }
     }
 
     @Override
     public void deleteGames() {
         String statement = "DELETE FROM game";
         this.executeUpdate(statement);
-
     }
 
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS game (
             `gameID` int NOT NULL AUTO_INCREMENT,
-            `whiteUsername` varchar(256),
-            `blackUsername` varchar(256),
+            `whiteUsername` varchar(256) DEFAULT NULL,
+            `blackUsername` varchar(256) DEFAULT NULL,
             `gameName` varchar(256) NOT NULL,
-            `game` TEXT,
+            `chessGameID` int DEFAULT NULL,
             PRIMARY KEY (`gameID`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """

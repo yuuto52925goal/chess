@@ -3,6 +3,7 @@ package service;
 import chess.ChessGame;
 import dataaccess.GameDAO;
 import dataaccess.MemoryGameDAO;
+import dataaccess.MysqlGameDAO;
 import model.data.GameData;
 import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
@@ -18,7 +19,7 @@ public class GameService {
     private GameDAO gameDAO;
 
     public GameService() {
-        gameDAO = new MemoryGameDAO();
+        gameDAO = new MysqlGameDAO();
     }
 
     public Object listGames(){
