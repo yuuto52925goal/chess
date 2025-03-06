@@ -17,14 +17,14 @@ public class MysqlGameTest {
     }
 
     @Test
-    void testListGamesEmpty_Positive() {
+    void testListGamesEmptyPositive() {
         ArrayList<GameData> games = gameDAO.listGames();
         Assertions.assertNotNull(games, "List of games should not be null");
         Assertions.assertEquals(0, games.size(), "Game list should be empty after deletion");
     }
 
     @Test
-    void testCreateGame_Positive() {
+    void testCreateGamePositive() {
         String gameName = "TestGame";
         int gameId = gameDAO.createGame(gameName);
         Assertions.assertTrue(gameId > 0, "createGame should return a positive gameID");
@@ -34,14 +34,14 @@ public class MysqlGameTest {
     }
 
     @Test
-    void testCreateGame_Negative() {
+    void testCreateGameNegative() {
         String invalidGameName = "";
         int gameId = gameDAO.createGame(invalidGameName);
         Assertions.assertEquals(-1, gameId, "Creating a game with an empty gameName should return -1");
     }
 
     @Test
-    void testFindGame_Positive() {
+    void testFindGamePositive() {
         String gameName = "FindGameTest";
         int gameId = gameDAO.createGame(gameName);
         GameData game = gameDAO.findGame(gameId);
@@ -50,13 +50,13 @@ public class MysqlGameTest {
     }
 
     @Test
-    void testFindGame_Negative() {
+    void testFindGameNegative() {
         GameData game = gameDAO.findGame(-1);
         Assertions.assertNull(game, "findGame should return null for an invalid gameID");
     }
 
     @Test
-    void testUpdateGame_Positive() {
+    void testUpdateGamePositive() {
         String gameName = "UpdateGameTest";
         int gameId = gameDAO.createGame(gameName);
         GameData originalGame = gameDAO.findGame(gameId);
@@ -70,7 +70,7 @@ public class MysqlGameTest {
     }
 
     @Test
-    void testUpdateGame_Negative() {
+    void testUpdateGameNegative() {
         GameData nonExistentGame = new GameData(-1, "White", "Black", "NonExistent", null);
         Assertions.assertDoesNotThrow(() -> gameDAO.updateGame(nonExistentGame),
                 "Updating a non-existent game should not throw an exception");
@@ -79,7 +79,7 @@ public class MysqlGameTest {
     }
 
     @Test
-    void testDeleteGames_Positive() {
+    void testDeleteGamesPositive() {
         gameDAO.createGame("Game1");
         gameDAO.createGame("Game2");
         ArrayList<GameData> gamesBeforeDelete = gameDAO.listGames();

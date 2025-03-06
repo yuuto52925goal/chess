@@ -14,7 +14,7 @@ public class MysqlAuthTest {
     }
 
     @Test
-    void testCreateAndCheckAuth_Positive() {
+    void testCreateAndCheckAuthPositive() {
         String username = "TestUser";
         String authToken = authDAO.createAuth(username);
         Assertions.assertNotNull(authToken, "Auth token should not be null");
@@ -23,14 +23,14 @@ public class MysqlAuthTest {
     }
 
     @Test
-    void testCheckAuth_Negative() {
+    void testCheckAuthNegative() {
         String invalidToken = "invalid_token";
         String result = authDAO.checkAuth(invalidToken);
         Assertions.assertNull(result, "checkAuth should return null for an invalid token");
     }
 
     @Test
-    void testDeleteAuth_Positive() {
+    void testDeleteAuthPositive() {
         String username = "TestUser";
         String authToken = authDAO.createAuth(username);
         Assertions.assertNotNull(authToken, "Auth token should not be null");
@@ -40,12 +40,12 @@ public class MysqlAuthTest {
     }
 
     @Test
-    void testDeleteAuth_Negative() {
+    void testDeleteAuthNegative() {
         Assertions.assertDoesNotThrow(() -> authDAO.deleteAuth("non_existent_token"));
     }
 
     @Test
-    void testDeleteAllAuths_Positive() {
+    void testDeleteAllAuthsPositive() {
         authDAO.createAuth("User1");
         authDAO.createAuth("User2");
         authDAO.deleteAllAuths();

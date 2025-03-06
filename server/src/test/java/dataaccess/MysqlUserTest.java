@@ -18,7 +18,7 @@ public class MysqlUserTest {
     }
 
     @Test
-    void testCreateUserAndGetUser_Positive() {
+    void testCreateUserAndGetUserPositive() {
         String username = "testUser";
         String plainTextPassword = "plaintextPassword";
         String email = "test@example.com";
@@ -34,13 +34,13 @@ public class MysqlUserTest {
     }
 
     @Test
-    void testGetUser_Negative() {
+    void testGetUserNegative() {
         UserData retrievedUser = userDAO.getUser("nonexistentUser");
         Assertions.assertNull(retrievedUser, "Retrieving a non-existent user should return null");
     }
 
     @Test
-    void testCreateUser_DuplicateUsername_Negative() {
+    void testCreateUserDuplicateUsername_Negative() {
         String username1 = "user1";
         String username2 = "user2";
         String password = "password1";
@@ -54,7 +54,7 @@ public class MysqlUserTest {
     }
 
     @Test
-    void testDeleteAllUsers_Positive() {
+    void testDeleteAllUsersPositive() {
         userDAO.createUser(new UserData("user1", "password1", "user1@example.com"));
         userDAO.createUser(new UserData("user2", "password2", "user2@example.com"));
 
