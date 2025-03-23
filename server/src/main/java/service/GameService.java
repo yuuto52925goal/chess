@@ -36,7 +36,7 @@ public class GameService {
 
     public Object joinGame(JoinGameRequest joinGameRequest, String username){
         GameData findGame = gameDAO.findGame(joinGameRequest.gameID());
-        System.out.println(joinGameRequest.gameID());
+        System.out.println(joinGameRequest.gameID() + " " + joinGameRequest.playerColor());
         String playerColor = joinGameRequest.playerColor();
         if (findGame == null || playerColor == null ||
                 (!playerColor.equals("BLACK") && !playerColor.equals("WHITE"))){

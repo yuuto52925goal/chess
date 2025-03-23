@@ -6,6 +6,7 @@ import model.data.GameData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import com.google.gson.Gson;
 
 public class MysqlGameDAO extends Mysql implements GameDAO{
 
@@ -30,7 +31,8 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
                         String whiteUsername = rs.getString("whiteUsername");
                         String blackUsername = rs.getString("blackUsername");
                         String gameName = rs.getString("gameName");
-                        games.add(new GameData(gameId, whiteUsername, blackUsername, gameName, null));
+                        ChessGame game = new Gson().fromJson(rs.getString("game"), ChessGame.class);
+                        games.add(new GameData(gameId, whiteUsername, blackUsername, gameName, game));
                     }
                 }
             }
@@ -75,7 +77,8 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
                         String gameName = rs.getString("gameName");
                         String whiteUser = rs.getString("whiteUsername");
                         String blackUser = rs.getString("blackUsername");
-                        return new GameData(gameId, whiteUser, blackUser, gameName, null);
+                        ChessGame game = new Gson().fromJson(rs.getString("game"), ChessGame.class);
+                        return new GameData(gameId, whiteUser, blackUser, gameName, game);
                     }
                 }
             }
@@ -88,14 +91,21 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
 //    Needed to be edited in the future
     @Override
     public void updateGame(GameData game) {
-        String statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ? WHERE gameID = ?";
+        String statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? WHERE gameID = ?";
         try(var conn = DatabaseManager.getConnection()){
             try (var stmt = conn.prepareStatement(statement)) {
-                System.out.println(game.gameID()+ " " + game.whiteUsername() + " " + game.blackUsername() + " " + game.gameName());
+                System.out.println(game.gameID()+ " " + game.whiteUsername() + " " + game.blackUsername() + " " + game.gameName() + " " + game.game());
                 stmt.setString(1, game.whiteUsername());
                 stmt.setString(2, game.blackUsername());
                 stmt.setString(3, game.gameName());
-                stmt.setInt(4, game.gameID());
+                stmt.setInt(5, game.gameID());
+                if (game.game() != null) {
+                    System.out.println("new game");
+                    stmt.setObject(4, new Gson().toJson(game.game()));
+                }else{
+                    System.out.println("null");
+                    stmt.setObject(4, null);
+                }
                 stmt.executeUpdate();
             }
         }catch (SQLException | DataAccessException e){
@@ -116,7 +126,7 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
             `whiteUsername` varchar(256) DEFAULT NULL,
             `blackUsername` varchar(256) DEFAULT NULL,
             `gameName` varchar(256) NOT NULL,
-            `chessGameID` int DEFAULT NULL,
+            `game` JSON DEFAULT NULL,
             PRIMARY KEY (`gameID`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
