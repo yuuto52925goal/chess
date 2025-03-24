@@ -75,17 +75,17 @@ public class PregameClient {
 
     public String joinGame(String... params) {
         if (params.length >= 2){
-            if (params[1].equals("WHITE") || params[1].equals("BLACK")){
-                JoinGameRequest joinGameRequest = new JoinGameRequest(Integer.parseInt(params[0]), params[1]);
+            if (params[1].equals("white") || params[1].equals("black")){
+                JoinGameRequest joinGameRequest = new JoinGameRequest(Integer.parseInt(params[0]), params[1].toUpperCase());
                 serverFacade.joinGame(joinGameRequest, auth);
                 this.gameClient.setUserColor(params[1]);
                 this.gameClient.run();
                 return "joined game";
             }else{
-                return "Error";
+                return "Error1" + params[1];
             }
         }
-        return "Error";
+        return "Error2";
     }
 
     public String logout () {

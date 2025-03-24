@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessBoard;
+import ui.ChessBoardDrawer;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -10,14 +11,18 @@ public class GameClient {
     private String auth;
     private String userColor = "WHITE";
     private ChessBoard currentBoard;
+    private ChessBoardDrawer chessBoardDrawer;
 
     public GameClient(String auth) {
         this.auth = auth;
-        currentBoard = null;
+        currentBoard = new ChessBoard();
+        currentBoard.resetBoard();
+        chessBoardDrawer = new ChessBoardDrawer();
     }
 
     public void run() {
         System.out.println(help());
+        ChessBoardDrawer.drawChessBoard(currentBoard, userColor);
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while(!result.equals("exit")) {

@@ -47,7 +47,7 @@ public class ServerFacade {
 
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest, String authToken){
         String path = "/game";
-        return this.makeRequest("POST", path, joinGameRequest, JoinGameResult.class, authToken);
+        return this.makeRequest("PUT", path, joinGameRequest, JoinGameResult.class, authToken);
     }
 
     private <T>T makeRequest(String method, String path,Object request, Class<T> responseClass, String token) {
