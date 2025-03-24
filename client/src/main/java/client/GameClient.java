@@ -1,14 +1,19 @@
 package client;
 
+import chess.ChessBoard;
+
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class GameClient {
 
     private String auth;
+    private String userColor = "WHITE";
+    private ChessBoard currentBoard;
 
     public GameClient(String auth) {
         this.auth = auth;
+        currentBoard = null;
     }
 
     public void run() {
@@ -51,5 +56,9 @@ public class GameClient {
 
     public void setAuth(String auth) {
         this.auth = auth;
+    }
+
+    public String setUserColor(String userColor) {
+        this.userColor = userColor;
     }
 }

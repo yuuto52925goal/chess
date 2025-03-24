@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import model.data.GameData;
 import model.request.*;
 import model.result.CreateGameResult;
@@ -74,11 +75,15 @@ public class PregameClient {
 
     public String joinGame(String... params) {
         if (params.length >= 2){
-            System.out.println(Arrays.toString(params));
-            JoinGameRequest joinGameRequest = new JoinGameRequest(Integer.parseInt(params[0]), params[1]);
-            serverFacade.joinGame(joinGameRequest, auth);
-            this.gameClient.run();
-            return "join game";
+            if (params[1].equals("WHITE") || params[1].equals("BLACK")){
+                JoinGameRequest joinGameRequest = new JoinGameRequest(Integer.parseInt(params[0]), params[1]);
+                serverFacade.joinGame(joinGameRequest, auth);
+                this.gameClient.setUserColor(params[1]);
+                this.gameClient.run();
+                return "joined game";
+            }else{
+                return "Error";
+            }
         }
         return "Error";
     }
@@ -93,7 +98,7 @@ public class PregameClient {
                 Options:
                 - List all the games that currently exist: "l"
                 - Create a new game: "c" <GAMENAME>
-                - Play game: "p" <PLAYERCOLOR> <GAMEID>
+                - Play game: "p" <GAMEID> <PLAYERCOLOR>
                 - Observe game: "o" <GAMENAME>
                 - Logout the program: "q"
                 - Print this message: "h"
