@@ -17,45 +17,49 @@ public class ServerFacade {
 
     public void clearApplication(){
         String path = "/db";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, null, null);
     }
 
     public RegisterResult registerUser(RegisterRequest registerRequest){
         String path = "/user";
-        return this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+        return this.makeRequest("POST", path, registerRequest, RegisterResult.class, null);
     }
 
     public LoginResult loginUser(LoginRequest loginRequest){
         String path = "/session";
-        return this.makeRequest("POST", path, loginRequest, LoginResult.class);
+        return this.makeRequest("POST", path, loginRequest, LoginResult.class, null);
     }
 
-    public void logoutUser(LoginResult loginResult){
+    public void logoutUser(LoginResult loginResult, String authToken){
         String path = "/session";
-        this.makeRequest("DELETE", path, loginResult, LoginResult.class);
+        this.makeRequest("DELETE", path, loginResult, LoginResult.class, authToken);
     }
 
-    public ListGamesResult listGames(ListGamesRequest listGamesRequest){
+    public ListGamesResult listGames(ListGamesRequest listGamesRequest, String authToken){
         String path = "/game";
-        return this.makeRequest("GET", path, listGamesRequest, ListGamesResult.class);
+        return this.makeRequest("GET", path, listGamesRequest, ListGamesResult.class, authToken);
     }
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest){
+    public CreateGameResult createGame(CreateGameRequest createGameRequest, String authToken){
         String path = "/game";
-        return this.makeRequest("POST", path, createGameRequest, CreateGameResult.class);
+        return this.makeRequest("POST", path, createGameRequest, CreateGameResult.class, authToken);
     }
 
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest){
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest, String authToken){
         String path = "/game";
-        return this.makeRequest("POST", path, joinGameRequest, JoinGameResult.class);
+        return this.makeRequest("POST", path, joinGameRequest, JoinGameResult.class, authToken);
     }
 
-    private <T>T makeRequest(String method, String path,Object request, Class<T> responseClass) {
+    private <T>T makeRequest(String method, String path,Object request, Class<T> responseClass, String token) {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+
+            if (token != null) {
+                http.setRequestProperty("Authorization", "Bearer " + token);
+            }
 
             writeBody(request, http);
             http.connect();
