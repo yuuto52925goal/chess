@@ -58,7 +58,7 @@ public class ServerFacade {
             http.setDoOutput(true);
 
             if (token != null) {
-                http.setRequestProperty("Authorization", "Bearer " + token);
+                http.setRequestProperty("Authorization", token);
             }
 
             writeBody(request, http);
@@ -77,7 +77,7 @@ public class ServerFacade {
             try (OutputStream os = http.getOutputStream()) {
                 os.write(reqData.getBytes());
             }catch (Exception e) {
-                System.out.println("Error writing request body");
+                System.err.println("Error writing request body: " + e.getMessage());
             }
         }
     }

@@ -20,6 +20,7 @@ public class Repl {
             String line = scanner.nextLine();
             try{
                 result = authClient.eval(line);
+                System.out.println(result);
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }

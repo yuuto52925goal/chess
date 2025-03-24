@@ -26,7 +26,7 @@ public class PregameClient {
         System.out.println(help());
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("logout")) {
+        while (!result.equals("logging out from the system...")) {
             String input = scanner.nextLine();
             try {
                 result = this.eval(input);
@@ -55,12 +55,11 @@ public class PregameClient {
     }
 
     public String listGame(){
-        ListGamesRequest listGamesRequest = new ListGamesRequest(auth);
-        ListGamesResult listGamesResult = serverFacade.listGames(listGamesRequest, auth);
+        ListGamesResult listGamesResult = serverFacade.listGames(null, auth);
         for (GameData game: listGamesResult.games()){
             System.out.println(game);
         }
-        return "List of games";
+        return "Showing list of games";
     }
 
     public String createGame (String... params){
@@ -85,9 +84,8 @@ public class PregameClient {
     }
 
     public String logout () {
-        LogoutRequest logoutRequest = new LogoutRequest(auth);
-        serverFacade.logoutUser(logoutRequest, auth);
-        return "logout";
+        serverFacade.logoutUser(null, auth);
+        return "logging out from the system...";
     }
 
     public String help(){

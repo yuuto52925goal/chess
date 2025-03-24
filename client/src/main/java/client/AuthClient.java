@@ -43,7 +43,7 @@ public class AuthClient {
             pregameClient.setAuth(loginResult.authToken());
             System.out.println("Successfully logged in");
             pregameClient.run();
-            return String.format("Login %s:%s", params[0], params[1]);
+            return "Log out";
         }
         return "Error";
     }
@@ -55,7 +55,7 @@ public class AuthClient {
             pregameClient.setAuth(registerResult.authToken());
             System.out.println("Successfully registered");
             pregameClient.run();
-            return String.format("Register %s:%s", params[0], params[1]);
+            return "Log out";
         }
         return "Error";
     }
