@@ -58,7 +58,7 @@ public class GameClient {
         this.auth = auth;
     }
 
-    public String setUserColor(String userColor) {
+    public void setUserColor(String userColor) {
         this.userColor = userColor;
     }
 }
