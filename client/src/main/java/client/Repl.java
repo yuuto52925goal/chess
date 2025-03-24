@@ -16,11 +16,10 @@ public class Repl {
         System.out.print(authClient.help());
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while(!result.equals("q")){
+        while(!result.equals("quit")){
             String line = scanner.nextLine();
             try{
                 result = authClient.eval(line);
-                System.out.println(result);
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }

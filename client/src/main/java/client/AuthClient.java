@@ -1,15 +1,23 @@
 package client;
 
+import model.request.LoginRequest;
+import model.request.RegisterRequest;
+import model.result.LoginResult;
+import model.result.RegisterResult;
+import server.ServerFacade;
+
 import java.util.Arrays;
 
 public class AuthClient {
 
     private String serverUrl;
     private PregameClient pregameClient;
+    private ServerFacade serverFacade;
 
     public AuthClient(String url) {
         serverUrl = url;
         pregameClient = new PregameClient("");
+        serverFacade = new ServerFacade(serverUrl);
     }
 
     public String eval (String input){
@@ -30,8 +38,10 @@ public class AuthClient {
 
     public String login(String... params) {
         if (params.length >= 2){
-            System.out.println(Arrays.toString(params));
-            pregameClient.setAuth("hello123");
+            LoginRequest loginRequest = new LoginRequest(params[0], params[1]);
+            LoginResult loginResult = serverFacade.loginUser(loginRequest);
+            pregameClient.setAuth(loginResult.authToken());
+            System.out.println("Successfully logged in");
             pregameClient.run();
             return String.format("Login %s:%s", params[0], params[1]);
         }
@@ -39,9 +49,11 @@ public class AuthClient {
     }
 
     public String register (String... params) {
-        if (params.length >= 2){
-            System.out.println(Arrays.toString(params));
-            pregameClient.setAuth("hello1234");
+        if (params.length >= 3){
+            RegisterRequest registerRequest = new RegisterRequest(params[0], params[1], params[2]);
+            RegisterResult registerResult = serverFacade.registerUser(registerRequest);
+            pregameClient.setAuth(registerResult.authToken());
+            System.out.println("Successfully registered");
             pregameClient.run();
             return String.format("Register %s:%s", params[0], params[1]);
         }
@@ -57,8 +69,8 @@ public class AuthClient {
     public String help(){
         return """
                 Options:
-                - Login as an existing user: "l"or "login" <USERNAME> <PASSWORD>
-                - Register a  new user: "r"or "register" <USERNAME> <PASSWORD> <EMAIL>
+                - Login as an existing user: "l" <USERNAME> <PASSWORD>
+                - Register a  new user: "r" <USERNAME> <PASSWORD> <EMAIL>
                 - EXIST the program: "q", "quit"
                 - Print this message: "h", "help"
                 """;
