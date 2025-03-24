@@ -1,5 +1,12 @@
 package client;
 
+import model.data.GameData;
+import model.request.*;
+import model.result.CreateGameResult;
+import model.result.JoinGameResult;
+import model.result.ListGamesResult;
+import server.ServerFacade;
+
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -7,10 +14,12 @@ public class PregameClient {
 
     private String auth;
     private GameClient gameClient;
+    private ServerFacade serverFacade;
 
-    public PregameClient(String auth) {
+    public PregameClient(String auth, String url) {
         this.auth = auth;
         this.gameClient = new GameClient(auth);
+        this.serverFacade = new ServerFacade(url);
     }
 
     public void run () {
@@ -46,12 +55,19 @@ public class PregameClient {
     }
 
     public String listGame(){
+        ListGamesRequest listGamesRequest = new ListGamesRequest(auth);
+        ListGamesResult listGamesResult = serverFacade.listGames(listGamesRequest, auth);
+        for (GameData game: listGamesResult.games()){
+            System.out.println(game);
+        }
         return "List of games";
     }
 
     public String createGame (String... params){
-        if (params.length < 2) {
-            System.out.println(Arrays.toString(params));
+        if (params.length >= 1) {
+            CreateGameRequest createGameRequest = new CreateGameRequest(params[0]);
+            CreateGameResult createGameResult = serverFacade.createGame(createGameRequest, auth);
+            System.out.println(createGameResult.gameID() + " is created!");
             return "Create game";
         }
         return "Error";
@@ -60,6 +76,8 @@ public class PregameClient {
     public String joinGame(String... params) {
         if (params.length >= 2){
             System.out.println(Arrays.toString(params));
+            JoinGameRequest joinGameRequest = new JoinGameRequest(Integer.parseInt(params[0]), params[1]);
+            serverFacade.joinGame(joinGameRequest, auth);
             this.gameClient.run();
             return "join game";
         }
@@ -67,6 +85,8 @@ public class PregameClient {
     }
 
     public String logout () {
+        LogoutRequest logoutRequest = new LogoutRequest(auth);
+        serverFacade.logoutUser(logoutRequest, auth);
         return "logout";
     }
 
@@ -77,8 +97,8 @@ public class PregameClient {
                 - Create a new game: "c" <GAMENAME>
                 - Play game: "p" <PLAYERCOLOR> <GAMEID>
                 - Observe game: "o" <GAMENAME>
-                - Logout the program: "q", "quit"
-                - Print this message: "h", "help"
+                - Logout the program: "q"
+                - Print this message: "h"
                 """;
     }
 

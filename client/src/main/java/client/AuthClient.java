@@ -16,7 +16,7 @@ public class AuthClient {
 
     public AuthClient(String url) {
         serverUrl = url;
-        pregameClient = new PregameClient("");
+        pregameClient = new PregameClient("", url);
         serverFacade = new ServerFacade(serverUrl);
     }
 

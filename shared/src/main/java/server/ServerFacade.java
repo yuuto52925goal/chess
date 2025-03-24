@@ -30,9 +30,9 @@ public class ServerFacade {
         return this.makeRequest("POST", path, loginRequest, LoginResult.class, null);
     }
 
-    public void logoutUser(LoginResult loginResult, String authToken){
+    public void logoutUser(LogoutRequest logoutRequest, String authToken){
         String path = "/session";
-        this.makeRequest("DELETE", path, loginResult, LoginResult.class, authToken);
+        this.makeRequest("DELETE", path, logoutRequest, LogoutResult.class, authToken);
     }
 
     public ListGamesResult listGames(ListGamesRequest listGamesRequest, String authToken){
