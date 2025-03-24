@@ -1,6 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
+import model.request.*;
+import model.result.*;
 
 import java.io.*;
 import java.net.*;
@@ -11,6 +13,41 @@ public class ServerFacade {
 
     public ServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
+    }
+
+    public void clearApplication(){
+        String path = "/db";
+        this.makeRequest("DELETE", path, null, null);
+    }
+
+    public RegisterResult registerUser(RegisterRequest registerRequest){
+        String path = "/user";
+        return this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+    }
+
+    public LoginResult loginUser(LoginRequest loginRequest){
+        String path = "/session";
+        return this.makeRequest("POST", path, loginRequest, LoginResult.class);
+    }
+
+    public void logoutUser(LoginResult loginResult){
+        String path = "/session";
+        this.makeRequest("DELETE", path, loginResult, LoginResult.class);
+    }
+
+    public ListGamesResult listGames(ListGamesRequest listGamesRequest){
+        String path = "/game";
+        return this.makeRequest("GET", path, listGamesRequest, ListGamesResult.class);
+    }
+
+    public CreateGameResult createGame(CreateGameRequest createGameRequest){
+        String path = "/game";
+        return this.makeRequest("POST", path, createGameRequest, CreateGameResult.class);
+    }
+
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest){
+        String path = "/game";
+        return this.makeRequest("POST", path, joinGameRequest, JoinGameResult.class);
     }
 
     private <T>T makeRequest(String method, String path,Object request, Class<T> responseClass) {
