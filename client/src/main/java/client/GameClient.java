@@ -20,22 +20,6 @@ public class GameClient extends BaseClient{
         chessBoardDrawer = new ChessBoardDrawer();
     }
 
-    public void run() {
-        System.out.println(help());
-        ChessBoardDrawer.drawChessBoard(currentBoard, userColor);
-        Scanner scanner = new Scanner(System.in);
-        var result = "";
-        while(!result.equals("Finish game")) {
-            String input = scanner.nextLine();
-            try {
-                result = this.eval(input);
-                System.out.println(result);
-            } catch (Exception e){
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
     @Override
     protected boolean shouldExit(String result) {
         return result.equals("Finish game");
