@@ -94,7 +94,6 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
         String statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? WHERE gameID = ?";
         try(var conn = DatabaseManager.getConnection()){
             try (var stmt = conn.prepareStatement(statement)) {
-                System.out.println(game.gameID()+ " " + game.whiteUsername() + " " + game.blackUsername() + " " + game.gameName() + " " + game.game());
                 stmt.setString(1, game.whiteUsername());
                 stmt.setString(2, game.blackUsername());
                 stmt.setString(3, game.gameName());

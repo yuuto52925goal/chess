@@ -25,7 +25,7 @@ public class GameClient {
         ChessBoardDrawer.drawChessBoard(currentBoard, userColor);
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while(!result.equals("exit")) {
+        while(!result.equals("Finish game")) {
             String input = scanner.nextLine();
             try {
                 result = this.eval(input);
@@ -43,7 +43,7 @@ public class GameClient {
             var args = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "help" -> help();
-                case "e" -> "exit";
+                case "e" -> "Finish game";
                 default -> help();
             };
         }catch (Exception e){
