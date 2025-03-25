@@ -93,27 +93,27 @@ public class PregameClient extends BaseClient {
     }
 
     public String joinGame(String... params) {
-        if (params.length >= 2){
-            if (params[1].equals("white") || params[1].equals("black")){
-                int gameIndexNum = Integer.parseInt(params[0]);
-                for (Map.Entry<Integer, Integer> entry: gameIndex.entrySet()){
-                    if (entry.getValue() == gameIndexNum){
-                        JoinGameRequest joinGameRequest = new JoinGameRequest(entry.getKey(), params[1].toUpperCase());
-                        var result = serverFacade.joinGame(joinGameRequest, auth);
-                        if (result == null){
-                            return "Error joining game";
-                        }
-                        this.gameClient.setUserColor(params[1]);
-                        this.gameClient.run();
-                        return "joined game";
-                    }
-                }
-                return "Error joining game";
-            }else{
-                return "Error" + params[1] + " is not a valid color";
-            }
+        if (params.length < 2){
+            return "Error";
         }
-        return "Error";
+        if (params[1].equals("white") || params[1].equals("black")){
+            int gameIndexNum = Integer.parseInt(params[0]);
+            for (Map.Entry<Integer, Integer> entry: gameIndex.entrySet()){
+                if (entry.getValue() == gameIndexNum){
+                    JoinGameRequest joinGameRequest = new JoinGameRequest(entry.getKey(), params[1].toUpperCase());
+                    var result = serverFacade.joinGame(joinGameRequest, auth);
+                    if (result == null){
+                        return "Error joining game";
+                    }
+                    this.gameClient.setUserColor(params[1]);
+                    this.gameClient.run();
+                    return "joined game";
+                }
+            }
+            return "Error joining game";
+        }else{
+            return "Error" + params[1] + " is not a valid color";
+        }
     }
 
     public String observeBoard(String... params) {
