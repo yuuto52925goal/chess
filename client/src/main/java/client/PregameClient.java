@@ -26,7 +26,7 @@ public class PregameClient extends BaseClient {
         this.gameClient = new GameClient(auth);
         this.serverFacade = new ServerFacade(url);
         this.gameIndex = new HashMap<>();
-        this.currentGame = 0;
+        this.currentGame = 1;
     }
 
     @Override
@@ -68,10 +68,10 @@ public class PregameClient extends BaseClient {
                 currentGame++;
             }
             System.out.println(
-                    "Game ID: " + gameIndex.get(game.gameID()) +
-                    " Game name: " + game.gameName() +
-                    " White username: " + game.whiteUsername() +
-                    " Black username: " + game.blackUsername()
+                    gameIndex.get(game.gameID()) +
+                    ". " + game.gameName() +
+                    ". White: " + game.whiteUsername() +
+                    ". Black: " + game.blackUsername()
             );
         }
         return "Showing list of games";
@@ -112,13 +112,15 @@ public class PregameClient extends BaseClient {
             }
             return "Error joining game";
         }else{
-            return "Error" + params[1] + " is not a valid color";
+            return "Error " + params[1] + " is not a valid color";
         }
     }
 
     public String observeBoard(String... params) {
         if (params.length >= 1){
+            this.gameClient.setUserColor("white");
             this.gameClient.run();
+
             return "observed game";
         }
         return "Error";
