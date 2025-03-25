@@ -10,17 +10,23 @@ import server.ServerFacade;
 
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PregameClient extends BaseClient {
 
     private String auth;
     private GameClient gameClient;
     private ServerFacade serverFacade;
+    private HashMap<Integer, Integer> gameIndex;
+    private int currentGame;
 
     public PregameClient(String auth, String url) {
         this.auth = auth;
         this.gameClient = new GameClient(auth);
         this.serverFacade = new ServerFacade(url);
+        this.gameIndex = new HashMap<>();
+        this.currentGame = 0;
     }
 
     @Override
@@ -57,10 +63,15 @@ public class PregameClient extends BaseClient {
             return "Error listing games";
         }
         for (GameData game: ((ListGamesResult)result).games()){
+            if (!gameIndex.containsKey(game.gameID())){
+                gameIndex.put(game.gameID(), currentGame);
+                currentGame++;
+            }
             System.out.println(
-                    "Game name:" + game.gameName() +
-                    " White username:" + game.whiteUsername() +
-                    " Black username:" + game.blackUsername()
+                    "Game ID: " + gameIndex.get(game.gameID()) +
+                    " Game name: " + game.gameName() +
+                    " White username: " + game.whiteUsername() +
+                    " Black username: " + game.blackUsername()
             );
         }
         return "Showing list of games";
@@ -73,7 +84,9 @@ public class PregameClient extends BaseClient {
             if (result == null){
                 return "Error creating game";
             }
-            System.out.println(((CreateGameResult) result).gameID() + " is created!");
+            gameIndex.put(result.gameID(), currentGame);
+            System.out.println(currentGame + " is created!");
+            currentGame++;
             return "Created game";
         }
         return "Error";
@@ -82,14 +95,20 @@ public class PregameClient extends BaseClient {
     public String joinGame(String... params) {
         if (params.length >= 2){
             if (params[1].equals("white") || params[1].equals("black")){
-                JoinGameRequest joinGameRequest = new JoinGameRequest(Integer.parseInt(params[0]), params[1].toUpperCase());
-                var result = serverFacade.joinGame(joinGameRequest, auth);
-                if (result == null){
-                    return "Error joining game";
+                int gameIndexNum = Integer.parseInt(params[0]);
+                for (Map.Entry<Integer, Integer> entry: gameIndex.entrySet()){
+                    if (entry.getValue() == gameIndexNum){
+                        JoinGameRequest joinGameRequest = new JoinGameRequest(entry.getKey(), params[1].toUpperCase());
+                        var result = serverFacade.joinGame(joinGameRequest, auth);
+                        if (result == null){
+                            return "Error joining game";
+                        }
+                        this.gameClient.setUserColor(params[1]);
+                        this.gameClient.run();
+                        return "joined game";
+                    }
                 }
-                this.gameClient.setUserColor(params[1]);
-                this.gameClient.run();
-                return "joined game";
+                return "Error joining game";
             }else{
                 return "Error" + params[1] + " is not a valid color";
             }
