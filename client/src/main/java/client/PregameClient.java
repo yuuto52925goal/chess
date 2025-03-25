@@ -42,6 +42,7 @@ public class PregameClient extends BaseClient {
                 case "l" -> listGame();
                 case "c" -> createGame(args);
                 case "p" -> joinGame(args);
+//                case "o" -> joinGame(args);
                 case "q" -> logout();
                 default -> help();
             };
@@ -56,7 +57,7 @@ public class PregameClient extends BaseClient {
             return "Error listing games";
         }
         for (GameData game: ((ListGamesResult)result).games()){
-            System.out.println(game);
+            System.out.println(game.gameName() + "White username" + game.whiteUsername() + "Black username" + game.blackUsername());
         }
         return "Showing list of games";
     }
