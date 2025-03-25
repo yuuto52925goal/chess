@@ -4,7 +4,6 @@ import chess.ChessGame;
 import model.data.GameData;
 import model.request.*;
 import model.result.CreateGameResult;
-import model.result.JoinGameResult;
 import model.result.ListGamesResult;
 import server.ServerFacade;
 
