@@ -78,7 +78,7 @@ public class ServerFacade {
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
-        }catch (Exception _) {
+        }catch (Exception e) {
             return null;
         }
     }
@@ -89,7 +89,7 @@ public class ServerFacade {
             String reqData = new Gson().toJson(request);
             try (OutputStream os = http.getOutputStream()) {
                 os.write(reqData.getBytes());
-            }catch (Exception _) {}
+            }catch (Exception e) {}
         }
     }
 
