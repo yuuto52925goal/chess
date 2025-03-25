@@ -9,7 +9,6 @@ import model.result.ListGamesResult;
 import server.ServerFacade;
 
 import java.util.Arrays;
-import java.util.Scanner;
 
 public class PregameClient extends BaseClient {
 
