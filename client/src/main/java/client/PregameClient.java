@@ -51,8 +51,11 @@ public class PregameClient extends BaseClient {
     }
 
     public String listGame(){
-        ListGamesResult listGamesResult = serverFacade.listGames(null, auth);
-        for (GameData game: listGamesResult.games()){
+        var result = serverFacade.listGames(null, auth);
+        if (result == null){
+            return "Error listing games";
+        }
+        for (GameData game: ((ListGamesResult)result).games()){
             System.out.println(game);
         }
         return "Showing list of games";
@@ -61,9 +64,12 @@ public class PregameClient extends BaseClient {
     public String createGame (String... params){
         if (params.length >= 1) {
             CreateGameRequest createGameRequest = new CreateGameRequest(params[0]);
-            CreateGameResult createGameResult = serverFacade.createGame(createGameRequest, auth);
-            System.out.println(createGameResult.gameID() + " is created!");
-            return "Create game";
+            var result = serverFacade.createGame(createGameRequest, auth);
+            if (result == null){
+                return "Error creating game";
+            }
+            System.out.println(((CreateGameResult) result).gameID() + " is created!");
+            return "Created game";
         }
         return "Error";
     }
@@ -72,15 +78,18 @@ public class PregameClient extends BaseClient {
         if (params.length >= 2){
             if (params[1].equals("white") || params[1].equals("black")){
                 JoinGameRequest joinGameRequest = new JoinGameRequest(Integer.parseInt(params[0]), params[1].toUpperCase());
-                serverFacade.joinGame(joinGameRequest, auth);
+                var result = serverFacade.joinGame(joinGameRequest, auth);
+                if (result == null){
+                    return "Error joining game";
+                }
                 this.gameClient.setUserColor(params[1]);
                 this.gameClient.run();
                 return "joined game";
             }else{
-                return "Error1" + params[1];
+                return "Error" + params[1] + " is not a valid color";
             }
         }
-        return "Error2";
+        return "Error";
     }
 
     public String logout () {
