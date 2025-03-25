@@ -44,7 +44,7 @@ public class GameClient {
             return switch (cmd) {
                 case "help" -> help();
                 case "e" -> "exit";
-                default -> "hello";
+                default -> help();
             };
         }catch (Exception e){
             return e.getMessage();

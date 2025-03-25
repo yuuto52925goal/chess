@@ -15,6 +15,19 @@ public class ServerFacade {
         this.serverUrl = serverUrl;
     }
 
+    public static class ServerException extends RuntimeException {
+        private final int statusCode;
+
+        public ServerException(int statusCode, String message) {
+            super("Server returned " + statusCode + ": " + message);
+            this.statusCode = statusCode;
+        }
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+    }
+
     public void clearApplication(){
         String path = "/db";
         this.makeRequest("DELETE", path, null, null, null);
@@ -50,7 +63,7 @@ public class ServerFacade {
         return this.makeRequest("PUT", path, joinGameRequest, JoinGameResult.class, authToken);
     }
 
-    private <T>T makeRequest(String method, String path,Object request, Class<T> responseClass, String token) {
+    private <T>T makeRequest(String method, String path,Object request, Class<T> responseClass, String token) throws ServerException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -70,14 +83,12 @@ public class ServerFacade {
         }
     }
 
-    private static void writeBody(Object request, HttpURLConnection http) {
+    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
             String reqData = new Gson().toJson(request);
             try (OutputStream os = http.getOutputStream()) {
                 os.write(reqData.getBytes());
-            }catch (Exception e) {
-                System.err.println("Error writing request body: " + e.getMessage());
             }
         }
     }
@@ -99,7 +110,7 @@ public class ServerFacade {
         }
     }
 
-    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) {
+    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T result = null;
         if (http.getContentLength() < 0){
             try (InputStream readyBody = http.getInputStream()){
@@ -107,8 +118,6 @@ public class ServerFacade {
                 if (responseClass != null){
                     result = new Gson().fromJson(reader, responseClass);
                 }
-            }catch (Exception e){
-                System.out.println("Error reading response body");
             }
         }
         return result;
