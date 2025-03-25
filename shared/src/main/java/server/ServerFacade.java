@@ -78,8 +78,8 @@ public class ServerFacade {
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
-        }catch (Exception e) {
-            throw new RuntimeException(e);
+        }catch (Exception _) {
+            return null;
         }
     }
 
@@ -89,7 +89,7 @@ public class ServerFacade {
             String reqData = new Gson().toJson(request);
             try (OutputStream os = http.getOutputStream()) {
                 os.write(reqData.getBytes());
-            }
+            }catch (Exception _) {}
         }
     }
 
@@ -97,16 +97,18 @@ public class ServerFacade {
         try {
             var status = http.getResponseCode();
             if (status != 200){
-                try (InputStream respErr = http.getErrorStream()) {
-                    if (respErr != null) {
-                        System.out.println("Error writing response body");
-                    }
-                } catch (IOException e) {
-                    System.out.println("Error writing response body");
+                if (status == 401){
+                    System.out.println("Unauthorized");
+                }else if (status == 403){
+                    System.out.println("Already taken");
+                }else if (status == 404){
+                    System.out.println("Not found");
+                }else if (status == 400){
+                    System.out.println("Bad request");
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error Getting response body");
+            System.out.println("Error Getting response");
         }
     }
 

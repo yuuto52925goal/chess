@@ -39,8 +39,11 @@ public class AuthClient {
     public String login(String... params) {
         if (params.length >= 2){
             LoginRequest loginRequest = new LoginRequest(params[0], params[1]);
-            LoginResult loginResult = serverFacade.loginUser(loginRequest);
-            pregameClient.setAuth(loginResult.authToken());
+            var result = serverFacade.loginUser(loginRequest);
+            if (result == null){
+                return "Login Error";
+            }
+            pregameClient.setAuth(((LoginResult) result).authToken());
             System.out.println("Successfully logged in");
             pregameClient.run();
             return "Log out";
@@ -51,8 +54,11 @@ public class AuthClient {
     public String register (String... params) {
         if (params.length >= 3){
             RegisterRequest registerRequest = new RegisterRequest(params[0], params[1], params[2]);
-            RegisterResult registerResult = serverFacade.registerUser(registerRequest);
-            pregameClient.setAuth(registerResult.authToken());
+            var result = serverFacade.registerUser(registerRequest);
+            if (result == null){
+                return "Register Error";
+            }
+            pregameClient.setAuth(((RegisterResult) result).authToken());
             System.out.println("Successfully registered");
             pregameClient.run();
             return "Log out";

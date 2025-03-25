@@ -57,8 +57,7 @@ public class ServerFacadeTests {
     void registerUserNegative() {
         facade.registerUser(new RegisterRequest("duplicate", "pass", "email@test.com"));
 
-        assertThrows(RuntimeException.class, () ->
-                facade.registerUser(new RegisterRequest("duplicate", "pass", "email@test.com")));
+        assertNull(facade.registerUser(new RegisterRequest("duplicate", "pass", "email@test.com")));
     }
 
     @Test
@@ -79,7 +78,7 @@ public class ServerFacadeTests {
     void loginUserNegative() {
         // Try to login with invalid credentials
         LoginRequest request = new LoginRequest("nonexistent", "wrongpass");
-        assertThrows(RuntimeException.class, () -> facade.loginUser(request));
+        assertNull(facade.loginUser(request));
     }
 
     @Test
@@ -95,8 +94,7 @@ public class ServerFacadeTests {
 
     @Test
     void logoutUserNegative() {
-        assertThrows(RuntimeException.class, () ->
-                facade.logoutUser(new LogoutRequest("hello"), "invalidToken"));
+        assertDoesNotThrow(() -> facade.logoutUser(new LogoutRequest("hello"), "invalidToken"));
     }
 
     @Test
@@ -116,8 +114,7 @@ public class ServerFacadeTests {
     @Test
     void listGamesNegative() {
         // Try to list games without auth token
-        assertThrows(RuntimeException.class, () ->
-                facade.listGames(new ListGamesRequest("invalidToken"), "invalidToken"));
+        assertNull(facade.listGames(new ListGamesRequest("invalidToken"), "invalidToken"));
     }
 
     @Test
@@ -136,8 +133,7 @@ public class ServerFacadeTests {
     @Test
     void createGameNegative() {
         // Try to create game without auth token
-        assertThrows(RuntimeException.class, () ->
-                facade.createGame(new CreateGameRequest("Unauthorized Game"), "invalidToken"));
+        assertNull(facade.createGame(new CreateGameRequest("Unauthorized Game"), "invalidToken"));
     }
 
     @Test
@@ -163,8 +159,7 @@ public class ServerFacadeTests {
         facade.joinGame(firstJoin, registerResult.authToken());
 
         JoinGameRequest secondJoin = new JoinGameRequest(game.gameID(), "WHITE");
-        assertThrows(RuntimeException.class, () ->
-                facade.joinGame(secondJoin, registerResult.authToken()));
+        assertNull(facade.joinGame(secondJoin, registerResult.authToken()));
     }
 
 }
