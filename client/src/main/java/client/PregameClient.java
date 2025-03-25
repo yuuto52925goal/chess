@@ -42,7 +42,7 @@ public class PregameClient extends BaseClient {
                 case "l" -> listGame();
                 case "c" -> createGame(args);
                 case "p" -> joinGame(args);
-//                case "o" -> joinGame(args);
+                case "o" -> observeBoard(args);
                 case "q" -> logout();
                 default -> help();
             };
@@ -57,7 +57,11 @@ public class PregameClient extends BaseClient {
             return "Error listing games";
         }
         for (GameData game: ((ListGamesResult)result).games()){
-            System.out.println(game.gameName() + "White username" + game.whiteUsername() + "Black username" + game.blackUsername());
+            System.out.println(
+                    "Game name:" + game.gameName() +
+                    " White username:" + game.whiteUsername() +
+                    " Black username:" + game.blackUsername()
+            );
         }
         return "Showing list of games";
     }
@@ -89,6 +93,14 @@ public class PregameClient extends BaseClient {
             }else{
                 return "Error" + params[1] + " is not a valid color";
             }
+        }
+        return "Error";
+    }
+
+    public String observeBoard(String... params) {
+        if (params.length >= 1){
+            this.gameClient.run();
+            return "observed game";
         }
         return "Error";
     }
