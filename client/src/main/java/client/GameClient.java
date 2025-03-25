@@ -41,6 +41,11 @@ public class GameClient extends BaseClient{
         return result.equals("Finish game");
     }
 
+    @Override
+    protected void drawBoard(){
+        ChessBoardDrawer.drawChessBoard(currentBoard, userColor);
+    }
+
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");

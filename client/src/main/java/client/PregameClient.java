@@ -28,6 +28,11 @@ public class PregameClient extends BaseClient {
         return result.equals("logging out from the system...");
     }
 
+    @Override
+    protected void drawBoard(){
+
+    }
+
     public String eval (String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
