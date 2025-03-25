@@ -6,7 +6,7 @@ import ui.ChessBoardDrawer;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class GameClient {
+public class GameClient extends BaseClient{
 
     private String auth;
     private String userColor = "WHITE";
@@ -34,6 +34,11 @@ public class GameClient {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    @Override
+    protected boolean shouldExit(String result) {
+        return result.equals("Finish game");
     }
 
     public String eval(String input) {

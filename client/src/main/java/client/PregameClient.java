@@ -11,7 +11,7 @@ import server.ServerFacade;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class PregameClient {
+public class PregameClient extends BaseClient {
 
     private String auth;
     private GameClient gameClient;
@@ -23,19 +23,9 @@ public class PregameClient {
         this.serverFacade = new ServerFacade(url);
     }
 
-    public void run () {
-        System.out.println(help());
-        Scanner scanner = new Scanner(System.in);
-        var result = "";
-        while (!result.equals("logging out from the system...")) {
-            String input = scanner.nextLine();
-            try {
-                result = this.eval(input);
-                System.out.println(result);
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-            }
-        }
+    @Override
+    protected boolean shouldExit(String result) {
+        return result.equals("logging out from the system...");
     }
 
     public String eval (String input) {
