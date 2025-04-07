@@ -10,6 +10,7 @@ import model.result.ErrorResponse;
 import service.GameService;
 import service.UserService;
 import spark.*;
+import websocket.WebsocketHandler;
 
 import java.sql.SQLException;
 
@@ -18,11 +19,13 @@ public class Server {
     private final UserService userService;
     private final UserHandler userHandler;
     private final GameService gameService;
+    private final WebsocketHandler websocketHandler;
 
     public Server() {
         this.userService = new UserService();
         userHandler = new UserHandler(userService);
         gameService = new GameService();
+        websocketHandler = new WebsocketHandler();
     }
 
     public int run(int desiredPort) {
@@ -30,7 +33,9 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
+
+        Spark.webSocket("/ws", websocketHandler);
+
         Spark.get("/", (req, res) -> {
             res.redirect("/index.html");
             return null;
