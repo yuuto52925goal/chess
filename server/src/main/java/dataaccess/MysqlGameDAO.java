@@ -99,7 +99,6 @@ public class MysqlGameDAO extends Mysql implements GameDAO{
                 stmt.setString(3, game.gameName());
                 stmt.setInt(5, game.gameID());
                 if (game.game() != null) {
-                    System.out.println("new game");
                     stmt.setObject(4, new Gson().toJson(game.game()));
                 }else{
                     System.out.println("null");
