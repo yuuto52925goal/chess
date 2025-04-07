@@ -2,17 +2,21 @@ package websocket;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.InvalidMoveException;
 import dataaccess.MysqlAuthDAO;
 import dataaccess.MysqlGameDAO;
 import model.data.ConnectionData;
 import model.data.GameData;
+import model.request.WsMoveRequest;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorResponse;
+import websocket.messages.LoadResponse;
+import websocket.messages.NotifiResponse;
 import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class WsService {
     private final MysqlAuthDAO mysqlAuthDAO;
@@ -26,53 +30,97 @@ public class WsService {
     }
 
     public void joinGame(UserGameCommand userGameCommand, Session userSession) throws IOException {
-//      Get username
-        String username = mysqlAuthDAO.checkAuth(userGameCommand.getAuthToken());
 
-        connectionManager.add(new ConnectionData(userGameCommand.getAuthToken(), userGameCommand.getGameID()), userSession);
-
-//       Get gameData put new one if it is null
-        GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
-        if(gameData.game() == null){
-            ChessBoard chessBoard = new ChessBoard();
-            chessBoard.resetBoard();
-            ChessGame newGame = new ChessGame();
-            newGame.setBoard(chessBoard);
-            GameData newGameData = new GameData(
-                    gameData.gameID(),
-                    gameData.whiteUsername(),
-                    gameData.blackUsername(),
-                    gameData.gameName(),
-                    newGame
-            );
-            gameData = newGameData;
-            mysqlGameDAO.updateGame(newGameData);
-        }
-
-//        Check observer, white, or black
-        String userColor;
-        if (Objects.equals(gameData.whiteUsername(), username)){
-            userColor = "white";
-        }else if (Objects.equals(gameData.blackUsername(), username)){
-            userColor = "black";
-        }else{
-            userColor = "Observer";
-        }
-
-        connectionManager.sendTo(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME), userSession, gameData.game().getBoard(), null);
-        String message = String.format("%s joined the game as %s", username, userColor);
-        connectionManager.broadcast(userGameCommand.getAuthToken(), userGameCommand.getGameID(), ServerMessage.ServerMessageType.NOTIFICATION, message);
-    }
-
-    public void makeMove(UserGameCommand userGameCommand, Session userSession) throws IOException {
-        String username = mysqlAuthDAO.checkAuth(userGameCommand.getAuthToken());
-
-        GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
-        if(gameData.game() == null){
+        String username = validateRequest(userGameCommand, userSession);
+        if (username == null) {
             return;
         }
+        GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
+        String userColor = determineUserColor(gameData, username);
+
+//        Send the message himself
+        connectionManager.add(new ConnectionData(userGameCommand.getAuthToken(), userGameCommand.getGameID()), userSession);
+        ServerMessage.ServerMessageType type = ServerMessage.ServerMessageType.LOAD_GAME;
+        connectionManager.sendTo(userSession, new LoadResponse(type, gameData));
+//        Send other users
+        String message = String.format("%s joined the game as %s", username, userColor);
+        NotifiResponse notifiResponse = new NotifiResponse(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connectionManager.broadcast(userGameCommand.getAuthToken(), userGameCommand.getGameID(), ServerMessage.ServerMessageType.NOTIFICATION, notifiResponse);
+    }
+
+    public void makeMove(UserGameCommand userGameCommand, Session userSession, WsMoveRequest wsMoveRequest) throws IOException, InvalidMoveException {
+        String username = validateRequest(userGameCommand, userSession);
+        if (username == null) {
+            return;
+        }
+        GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
+        String userColor = determineUserColor(gameData, username);
+        if (userColor.equals("OBSERVER")) {
+            sendError(userSession, "Cannot make a move because you are observer");
+            return;
+        }
+        try {
+            gameData.game().makeMove(wsMoveRequest.move());
+        }catch (InvalidMoveException e) {
+            sendError(userSession, "Invalid move");
+        }
+
+        mysqlGameDAO.updateGame(gameData);
+//        String message = String.format("%s maked the move as %s", username, userColor);
+//        NotifiResponse notifiResponse = new NotifiResponse(ServerMessage.ServerMessageType.NOTIFICATION, message);
+//        connectionManager.broadcast(userGameCommand.getAuthToken(), userGameCommand.getGameID(), ServerMessage.ServerMessageType.NOTIFICATION, notifiResponse);
+    }
 
 
+    private String validateRequest (UserGameCommand userGameCommand, Session userSession) throws IOException {
+
+        String username = mysqlAuthDAO.checkAuth(userGameCommand.getAuthToken());
+        if (username == null) {
+            sendError(userSession, "No right auth token");
+            return null;
+        }
+
+        GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
+        if (gameData == null) {
+            sendError(userSession, "Game not found");
+            return null;
+        }
+
+        if (gameData.game() == null){
+            initializeNewGame(gameData);
+        }
+
+        return username;
+    }
+
+    private String determineUserColor(GameData gameData, String username) {
+        if (username.equals(gameData.whiteUsername())) {
+            return "WHITE";
+        } else if (username.equals(gameData.blackUsername())) {
+            return "BLACK";
+        }
+        return "OBSERVER";
+    }
+
+    private void initializeNewGame(GameData gameData) {
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        ChessGame game = new ChessGame();
+        game.setBoard(board);
+
+        GameData newData = new GameData(
+                gameData.gameID(),
+                gameData.whiteUsername(),
+                gameData.blackUsername(),
+                gameData.gameName(),
+                game
+        );
+        mysqlGameDAO.updateGame(newData);
+    }
+
+    private void sendError(Session session, String message) throws IOException {
+        connectionManager.sendTo(session,
+                new ErrorResponse(ServerMessage.ServerMessageType.ERROR, message));
     }
 
 }

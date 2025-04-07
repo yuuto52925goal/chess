@@ -1,5 +1,6 @@
 package websocket;
 
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import model.data.ConnectionData;
 import model.request.WsConnectRequest;
@@ -55,11 +56,15 @@ public class WebsocketHandler {
         }
     }
 
-    public void makeMove(UserGameCommand command, Session session, String message) {
-        logger.info("Make move " + message);
-        logger.info(command.toString());
-        var moveRequest = new Gson().fromJson(message, WsMoveRequest.class);
-        System.out.println(moveRequest.move().getEndPosition());
+    public void makeMove(UserGameCommand command, Session session, String message){
+        try {
+            logger.info("Make move " + message);
+            logger.info(command.toString());
+            WsMoveRequest moveRequest = new Gson().fromJson(message, WsMoveRequest.class);
+            wsService.makeMove(command, session, moveRequest);
+        }catch (IOException | InvalidMoveException e){
+            logger.error(e.getMessage());
+        }
     }
 
     public void leaveGame(Session session) {

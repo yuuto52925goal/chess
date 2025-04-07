@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import model.data.ConnectionData;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.NotifiResponse;
 import websocket.messages.ServerMessage;
 
 
@@ -23,16 +24,13 @@ public class ConnectionManager {
         connections.remove(authToken);
     }
 
-    public void sendTo(ServerMessage serverMessage, Session session, Object data, String message) throws IOException {
-        switch (serverMessage.getServerMessageType()){
-            case LOAD_GAME -> session.getRemote().sendString(new Gson().toJson(data));
-            case ERROR -> session.getRemote().sendString(new Gson().toJson(message));
-        }
+    public void sendTo(Session session, Object data) throws IOException {
+        session.getRemote().sendString(new Gson().toJson(data));
     }
 
-    public void broadcast(String excludeToken, Integer gameID, ServerMessage.ServerMessageType notification, String message) throws IOException {
+    public void broadcast(String excludeToken, Integer gameID, ServerMessage.ServerMessageType notification, NotifiResponse message) throws IOException {
 
-        if (notification.equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
+        if (!notification.equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
             return;
         }
 
