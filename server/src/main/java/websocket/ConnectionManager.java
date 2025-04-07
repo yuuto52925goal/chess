@@ -23,7 +23,19 @@ public class ConnectionManager {
         connections.remove(authToken);
     }
 
+    public void sendTo(ServerMessage serverMessage, Session session, Object data, String message) throws IOException {
+        switch (serverMessage.getServerMessageType()){
+            case LOAD_GAME -> session.getRemote().sendString(new Gson().toJson(data));
+            case ERROR -> session.getRemote().sendString(new Gson().toJson(message));
+        }
+    }
+
     public void broadcast(String excludeToken, Integer gameID, ServerMessage.ServerMessageType notification, String message) throws IOException {
+
+        if (notification.equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
+            return;
+        }
+
         var removeList = new ArrayList<Connection>();
 
         for (var c: connections.values()) {
