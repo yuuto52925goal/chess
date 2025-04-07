@@ -1,6 +1,8 @@
 package websocket;
 
 import com.google.gson.Gson;
+import model.data.ConnectionData;
+import model.request.WsConnectRequest;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -8,6 +10,9 @@ import websocket.commands.UserGameCommand;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import websocket.messages.ServerMessage;
+
+import java.io.IOException;
 
 @WebSocket
 public class WebsocketHandler {
@@ -19,20 +24,24 @@ public class WebsocketHandler {
     public void onMessage(Session session, String message) {
         var action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
-            case CONNECT -> connect(action, session);
+            case CONNECT -> connect(action, session, message);
             case MAKE_MOVE -> makeMove(action, session);
             case LEAVE -> leaveGame(session);
             case RESIGN -> resignGame(session);
         }
     }
 
-    public void connect(UserGameCommand command, Session session) {
-//        connectionManager.add(name, session);
-//        System.out.println("Connected to " + name);
-//        logger.info("Connected to {}", name);
-//        var message = String.format("%s connected", name);
-//        var notification = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
+    public void connect(UserGameCommand command, Session session, String message)  {
+        try {
+            WsConnectRequest wsConnectRequest = new Gson().fromJson(message, WsConnectRequest.class);
+            connectionManager.add(new ConnectionData(command.getAuthToken(), command.getGameID()), session);
+            logger.info("Connected to " + session.getRemoteAddress());
 
+            String notification = String.format("%s has joined the game", session.getRemoteAddress());
+            connectionManager.broadcast(command.getAuthToken(), command.getGameID(), ServerMessage.ServerMessageType.LOAD_GAME, notification);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     public void makeMove(UserGameCommand command, Session session) {
