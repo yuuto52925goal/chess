@@ -347,7 +347,6 @@ public class WebSocketTests {
 
         assertCommandMessages(actualMessages, true, sender, types(), inGame, types(NOTIFICATION), otherClients);
     }
-
     private Map<String, Integer> expectedMessages(WebsocketUser sender, int senderExpected,
                                                   Set<WebsocketUser> inGame, int inGameExpected, Set<WebsocketUser> otherClients) {
         Map<String, Integer> expectedMessages = new HashMap<>();
