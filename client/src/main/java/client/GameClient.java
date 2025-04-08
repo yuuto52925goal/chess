@@ -1,12 +1,21 @@
 package client;
 
 import chess.ChessBoard;
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import client.ws.WebSocketFacade;
+import model.request.WsMoveMergeRequest;
+import model.request.WsMoveRequest;
 import ui.ChessBoardDrawer;
 import websocket.commands.UserGameCommand;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 public class GameClient extends BaseClient{
 
@@ -16,6 +25,16 @@ public class GameClient extends BaseClient{
     private ChessBoard currentBoard;
     private ChessBoardDrawer chessBoardDrawer;
     private WebSocketFacade webSocketFacade;
+    private Map<String, Integer> cToInt = Map.ofEntries(
+            entry("a", 8),
+            entry("b", 7),
+            entry("c", 6),
+            entry("d", 5),
+            entry("e", 4),
+            entry("f", 3),
+            entry("g", 2),
+            entry("h", 1)
+    );
 
     public GameClient(String auth) {
         this.auth = auth;
@@ -27,10 +46,6 @@ public class GameClient extends BaseClient{
     @Override
     protected boolean shouldExit(String result) {
         return result.equals("leave");
-    }
-
-    protected void drawBoard(){
-        ChessBoardDrawer.drawChessBoard(currentBoard, userColor);
     }
 
     public void run(WebSocketFacade webSocketFacade) {
@@ -58,7 +73,7 @@ public class GameClient extends BaseClient{
     }
 
     public String redraw() {
-        drawBoard();
+        ChessBoardDrawer.drawChessBoard(webSocketFacade.getChessGame().getBoard(), userColor, null);
         return "Draw board";
     }
 
@@ -69,17 +84,47 @@ public class GameClient extends BaseClient{
     }
 
     public String makeMove(String... params) {
+        if (params.length != 2) {
+            return "Error";
+        }
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID);
+        Integer cTo1 = cToInt.get(String.valueOf(params[0].charAt(1)));
+        ChessPosition startPosition = new ChessPosition(
+                Integer.parseInt(String.valueOf(params[0].charAt(0))), cTo1
+        );
+        Integer cTo2 = cToInt.get(String.valueOf(params[1].charAt(1)));
+        ChessPosition endPosition = new ChessPosition(
+                Integer.parseInt(String.valueOf(params[1].charAt(0))), cTo2
+        );
+        WsMoveRequest wsMoveRequest = new WsMoveRequest(new ChessMove(startPosition, endPosition, null));
+        WsMoveMergeRequest wsMoveMergeRequest = new WsMoveMergeRequest(command, wsMoveRequest);
+
+        this.webSocketFacade.makeMove(new Gson().toJson(wsMoveMergeRequest));
         return "makeMove";
     }
 
     public String resign(String... params) {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, auth, gameID);
+        this.webSocketFacade.runUserCommand(new Gson().toJson(command));
         return "resign";
     }
 
     public String highlight(String... params) {
-        return "highlight";
+        if (params.length != 1) {
+            return "Error";
+        }
+        try {
+            Integer cto1 = cToInt.get(String.valueOf(params[0].charAt(1)));
+            ChessPosition startPosition = new ChessPosition(
+                    Integer.parseInt(String.valueOf(params[0].charAt(0))), cto1
+            );
+            Collection<ChessMove> validMoves = webSocketFacade.getChessGame().validMoves(startPosition);
+            ChessBoardDrawer.drawChessBoard(webSocketFacade.getChessGame().getBoard(), userColor, validMoves);
+        } catch (Exception e){
+            return "Error";
+        }
+        return "highlighted";
     }
-
 
     public String help() {
         return  """
@@ -89,7 +134,7 @@ public class GameClient extends BaseClient{
                 - Leave Chess Board: "l"
                 - Make Move: "m start end"
                 - Resign Chess Board: "re"
-                - Highlight legal moves: "h"
+                - Highlight legal moves: "h position"
                 """;
     }
 

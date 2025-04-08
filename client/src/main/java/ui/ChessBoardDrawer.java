@@ -1,13 +1,28 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 
 public class ChessBoardDrawer {
 
-    public static void drawChessBoard(ChessBoard chessBoard, String teamColor) {
+    public static void drawChessBoard(ChessBoard chessBoard, String teamColor, Collection<ChessMove> validMoves) {
+        ChessPosition piecePosition = null;
+        ArrayList<ChessPosition> endPositions = new ArrayList<>();
+
+        // Extract positions if validMoves exists
+        if (validMoves != null && !validMoves.isEmpty()) {
+            piecePosition = validMoves.iterator().next().getStartPosition();
+            for (ChessMove move : validMoves) {
+                endPositions.add(move.getEndPosition());
+            }
+        }
+
+        System.out.println(endPositions.size());
+        System.out.println(piecePosition);
         if (teamColor.equals("black")) {
             System.out.println(EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE +
                                "    h  g  f  e  d  c  b  a    " +
@@ -28,11 +43,18 @@ public class ChessBoardDrawer {
                              EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
 
             for (int col = 1; col <= 8; col++) {
+                ChessPosition currentPosition = new ChessPosition(row, col);
                 String squareColor = ((row + col) % 2 == 0) ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
                         : EscapeSequences.SET_BG_COLOR_DARK_GREY;
                 if (teamColor.equals("white")) {
                     squareColor = ((row + col) % 2 == 0) ? EscapeSequences.SET_BG_COLOR_DARK_GREY
                             : EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+                }
+
+                if (piecePosition != null && piecePosition.equals(currentPosition)) {
+                    squareColor = EscapeSequences.SET_BG_COLOR_YELLOW;
+                }else if (piecePosition != null && endPositions.contains(currentPosition)){
+                    squareColor = EscapeSequences.SET_BG_COLOR_DARK_GREEN;
                 }
 
                 ChessPiece piece = chessBoard.getPiece(new ChessPosition(row, col));

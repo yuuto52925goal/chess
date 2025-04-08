@@ -1,5 +1,6 @@
 package client.ws;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 //import com.sun.nio.sctp.NotificationHandler;
 import model.request.WsMoveMergeRequest;
@@ -23,6 +24,7 @@ public class WebSocketFacade extends Endpoint {
     Session session;
     ChessBoardDrawer chessBoardDrawer;
     String userColor;
+    private ChessGame chessGame;
 
     public WebSocketFacade(String url, String useColor) {
         try {
@@ -59,7 +61,8 @@ public class WebSocketFacade extends Endpoint {
 
     public void loadGame(String message) {
         LoadResponse loadResponse = new Gson().fromJson(message, LoadResponse.class);
-        ChessBoardDrawer.drawChessBoard(loadResponse.game().game().getBoard(), userColor);
+        ChessBoardDrawer.drawChessBoard(loadResponse.game().game().getBoard(), userColor, null);
+        this.chessGame = loadResponse.game().game();
     }
 
     public void notifyMessage(String message) {
@@ -88,6 +91,14 @@ public class WebSocketFacade extends Endpoint {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public void setChessGame (ChessGame chessGame) {
+        this.chessGame = chessGame;
+    }
+
+    public ChessGame getChessGame() {
+        return chessGame;
     }
 
 }

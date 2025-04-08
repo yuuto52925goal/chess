@@ -128,9 +128,9 @@ public class PregameClient extends BaseClient {
                 }
             }
             UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, gameIndexNum);
-            webSocketFacade = new WebSocketFacade(url, params[1]);
+            webSocketFacade = new WebSocketFacade(url, "");
             webSocketFacade.runUserCommand(new Gson().toJson(command));
-            this.gameClient.run();
+            this.gameClient.run(webSocketFacade);
             return "observed game";
         }
         return "Error";
