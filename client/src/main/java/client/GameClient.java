@@ -22,7 +22,7 @@ public class GameClient extends BaseClient{
 
     @Override
     protected boolean shouldExit(String result) {
-        return result.equals("Finish game");
+        return result.equals("leave");
     }
 
     @Override
@@ -37,7 +37,11 @@ public class GameClient extends BaseClient{
             var args = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "help" -> help();
-                case "e" -> "Finish game";
+                case "r" -> redraw();
+                case "l" -> leave(args);
+                case "m" -> makeMove(args);
+                case "re" -> resign(args);
+                case "h" -> highlight(args);
                 default -> help();
             };
         }catch (Exception e){
@@ -45,11 +49,36 @@ public class GameClient extends BaseClient{
         }
     }
 
+    public String redraw() {
+        drawBoard();
+        return "Draw board";
+    }
+
+    public String leave(String... params) {
+        return "leave";
+    }
+
+    public String makeMove(String... params) {
+        return "makeMove";
+    }
+
+    public String resign(String... params) {
+        return "resign";
+    }
+
+    public String highlight(String... params) {
+        return "highlight";
+    }
+
+
     public String help() {
         return  """
                 Options:
-                - List all the games that currently exist: "<Place> <Move>"
-                - Finish the game: "e", "Finish the game"
+                - Redraw Chess Board: "r"
+                - Leave Chess Board: "l"
+                - Make Move: "m start end"
+                - Resign Chess Board: "re"
+                - Highlight legal moves: "h"
                 """;
     }
 
