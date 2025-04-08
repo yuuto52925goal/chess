@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 //import com.sun.nio.sctp.NotificationHandler;
 import model.request.WsMoveMergeRequest;
 import model.request.WsMoveRequest;
-import org.glassfish.tyrus.core.wsadl.model.Endpoint;
+//import org.glassfish.tyrus.core.wsadl.model.Endpoint;
 //import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadResponse;
@@ -16,19 +16,19 @@ import javax.websocket.WebSocketContainer;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.URI;
 
 public class WebSocketFacade extends Endpoint {
 
     Session session;
 
-    public WebSocketFacade(String url) throws MalformedURLException {
+    public WebSocketFacade(String url) {
         try {
             url = url.replace("http", "ws");
-            URL socketUrl = new URL(url);
+            URI socketUrl = new URI(url + "/ws");
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            this.session = container.connectToServer(this, socketUrl.toURI());
+            this.session = container.connectToServer(this, socketUrl);
 
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
@@ -43,8 +43,13 @@ public class WebSocketFacade extends Endpoint {
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException e) {
+            System.out.println("Error: " + e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void onOpen(Session session, EndpointConfig config) {
     }
 
     public void loadGame(String message) {

@@ -1,12 +1,14 @@
 package client;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import model.data.GameData;
 import model.request.*;
 import model.result.CreateGameResult;
 import model.result.ListGamesResult;
 import server.ServerFacade;
-
+import server.WebSocketFacade;
+import websocket.commands.UserGameCommand;
 
 
 import java.util.Arrays;
@@ -20,6 +22,8 @@ public class PregameClient extends BaseClient {
     private ServerFacade serverFacade;
     private HashMap<Integer, Integer> gameIndex;
     private int currentGame;
+    private WebSocketFacade webSocketFacade;
+    private String url;
 
     public PregameClient(String auth, String url) {
         this.auth = auth;
@@ -27,6 +31,7 @@ public class PregameClient extends BaseClient {
         this.serverFacade = new ServerFacade(url);
         this.gameIndex = new HashMap<>();
         this.currentGame = 1;
+        this.url = url;
     }
 
     @Override
@@ -106,7 +111,11 @@ public class PregameClient extends BaseClient {
                         return "Error joining game";
                     }
                     this.gameClient.setUserColor(params[1]);
-                    this.gameClient.run();
+                    this.gameClient.setGameID(joinGameRequest.gameID());
+                    UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, joinGameRequest.gameID());
+                    webSocketFacade = new WebSocketFacade(url);
+                    webSocketFacade.runUserCommand(new Gson().toJson(command));
+                    this.gameClient.run(webSocketFacade);
                     return "joined game";
                 }
             }

@@ -1,7 +1,10 @@
 package client;
 
 import chess.ChessBoard;
+import com.google.gson.Gson;
+import server.WebSocketFacade;
 import ui.ChessBoardDrawer;
+import websocket.commands.UserGameCommand;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -10,8 +13,10 @@ public class GameClient extends BaseClient{
 
     private String auth;
     private String userColor = "WHITE";
+    private Integer gameID;
     private ChessBoard currentBoard;
     private ChessBoardDrawer chessBoardDrawer;
+    private WebSocketFacade webSocketFacade;
 
     public GameClient(String auth) {
         this.auth = auth;
@@ -30,6 +35,11 @@ public class GameClient extends BaseClient{
         ChessBoardDrawer.drawChessBoard(currentBoard, userColor);
     }
 
+    public void run(WebSocketFacade webSocketFacade) {
+        this.webSocketFacade = webSocketFacade;
+        run();
+    }
+
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
@@ -38,7 +48,7 @@ public class GameClient extends BaseClient{
             return switch (cmd) {
                 case "help" -> help();
                 case "r" -> redraw();
-                case "l" -> leave(args);
+                case "l" -> leave();
                 case "m" -> makeMove(args);
                 case "re" -> resign(args);
                 case "h" -> highlight(args);
@@ -54,7 +64,9 @@ public class GameClient extends BaseClient{
         return "Draw board";
     }
 
-    public String leave(String... params) {
+    public String leave() {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, auth, gameID);
+        this.webSocketFacade.runUserCommand(new Gson().toJson(command));
         return "leave";
     }
 
@@ -74,6 +86,7 @@ public class GameClient extends BaseClient{
     public String help() {
         return  """
                 Options:
+                - Show help command: "help"
                 - Redraw Chess Board: "r"
                 - Leave Chess Board: "l"
                 - Make Move: "m start end"
@@ -88,5 +101,13 @@ public class GameClient extends BaseClient{
 
     public void setUserColor(String userColor) {
         this.userColor = userColor;
+    }
+
+    public void setGameID(Integer gameID) {
+        this.gameID = gameID;
+    }
+
+    public Integer getGameID() {
+        return gameID;
     }
 }
