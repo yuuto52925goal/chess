@@ -38,14 +38,16 @@ public class WsService {
         GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
         String userColor = determineUserColor(gameData, username);
 
+        System.out.println(username + "logged in" + userColor + " as userColor");
 //        Send the message himself
         connectionManager.add(new ConnectionData(userGameCommand.getAuthToken(), userGameCommand.getGameID()), userSession);
         ServerMessage.ServerMessageType type = ServerMessage.ServerMessageType.LOAD_GAME;
-        connectionManager.sendTo(userSession, new LoadResponse(type, gameData));
+        LoadResponse loadResponse = new LoadResponse(type, gameData);
+        connectionManager.sendTo(userSession, loadResponse);
 //        Send other users
         String message = String.format("%s joined the game as %s", username, userColor);
         NotifiResponse notifiResponse = new NotifiResponse(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connectionManager.broadcast(userGameCommand.getAuthToken(), userGameCommand.getGameID(), ServerMessage.ServerMessageType.NOTIFICATION, notifiResponse);
+        connectionManager.broadcast(userGameCommand.getAuthToken(), userGameCommand.getGameID(), ServerMessage.ServerMessageType.NOTIFICATION, notifiResponse, null);
     }
 
     public void makeMove(UserGameCommand userGameCommand, Session userSession, WsMoveRequest wsMoveRequest) throws IOException, InvalidMoveException {
@@ -53,22 +55,33 @@ public class WsService {
         if (username == null) {
             return;
         }
+
         GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
         String userColor = determineUserColor(gameData, username);
         if (userColor.equals("OBSERVER")) {
             sendError(userSession, "Cannot make a move because you are observer");
             return;
         }
+
+        String turn = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE ? "WHITE" : "BLACK";
+        if (!userColor.equals(turn)) {
+            sendError(userSession, "Cannot make a move because you are observer");
+            return;
+        }
+
         try {
             gameData.game().makeMove(wsMoveRequest.move());
         }catch (InvalidMoveException e) {
             sendError(userSession, "Invalid move");
+            return;
         }
 
         mysqlGameDAO.updateGame(gameData);
-//        String message = String.format("%s maked the move as %s", username, userColor);
-//        NotifiResponse notifiResponse = new NotifiResponse(ServerMessage.ServerMessageType.NOTIFICATION, message);
-//        connectionManager.broadcast(userGameCommand.getAuthToken(), userGameCommand.getGameID(), ServerMessage.ServerMessageType.NOTIFICATION, notifiResponse);
+        LoadResponse loadResponse = new LoadResponse(ServerMessage.ServerMessageType.LOAD_GAME, gameData);
+        connectionManager.sendTo(userSession, loadResponse);
+        String message = String.format("%s maked the move as %s", username, userColor);
+        NotifiResponse notifiResponse = new NotifiResponse(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connectionManager.broadcast(userGameCommand.getAuthToken(), userGameCommand.getGameID(), ServerMessage.ServerMessageType.NOTIFICATION, notifiResponse, loadResponse);
     }
 
 
