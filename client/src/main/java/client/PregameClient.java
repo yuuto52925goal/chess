@@ -1,13 +1,11 @@
 package client;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import model.data.GameData;
 import model.request.*;
-import model.result.CreateGameResult;
 import model.result.ListGamesResult;
 import server.ServerFacade;
-import server.WebSocketFacade;
+import client.ws.WebSocketFacade;
 import websocket.commands.UserGameCommand;
 
 
@@ -37,11 +35,6 @@ public class PregameClient extends BaseClient {
     @Override
     protected boolean shouldExit(String result) {
         return result.equals("logging out from the system...");
-    }
-
-    @Override
-    protected void drawBoard(){
-
     }
 
     public String eval (String input) {
@@ -113,7 +106,7 @@ public class PregameClient extends BaseClient {
                     this.gameClient.setUserColor(params[1]);
                     this.gameClient.setGameID(joinGameRequest.gameID());
                     UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, joinGameRequest.gameID());
-                    webSocketFacade = new WebSocketFacade(url);
+                    webSocketFacade = new WebSocketFacade(url, params[1]);
                     webSocketFacade.runUserCommand(new Gson().toJson(command));
                     this.gameClient.run(webSocketFacade);
                     return "joined game";
@@ -128,8 +121,16 @@ public class PregameClient extends BaseClient {
     public String observeBoard(String... params) {
         if (params.length >= 1){
             this.gameClient.setUserColor("white");
+            int gameIndexNum = Integer.parseInt(params[0]);
+            for (Map.Entry<Integer, Integer> entry: gameIndex.entrySet()){
+                if (entry.getValue() == gameIndexNum){
+                    this.gameClient.setGameID(entry.getKey());
+                }
+            }
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, gameIndexNum);
+            webSocketFacade = new WebSocketFacade(url, params[1]);
+            webSocketFacade.runUserCommand(new Gson().toJson(command));
             this.gameClient.run();
-
             return "observed game";
         }
         return "Error";

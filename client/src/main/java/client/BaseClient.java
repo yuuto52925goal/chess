@@ -7,7 +7,6 @@ public abstract class BaseClient {
 
     public void run() {
         System.out.println(help());
-        drawBoard();
         var result = "";
         while (!shouldExit(result)) {
             String input = scanner.nextLine();
@@ -19,7 +18,6 @@ public abstract class BaseClient {
             }
         }
     }
-    protected abstract void drawBoard();
     protected abstract boolean shouldExit(String result);
     protected abstract String eval(String input);
     protected abstract String help();

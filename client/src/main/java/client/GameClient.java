@@ -2,12 +2,11 @@ package client;
 
 import chess.ChessBoard;
 import com.google.gson.Gson;
-import server.WebSocketFacade;
+import client.ws.WebSocketFacade;
 import ui.ChessBoardDrawer;
 import websocket.commands.UserGameCommand;
 
 import java.util.Arrays;
-import java.util.Scanner;
 
 public class GameClient extends BaseClient{
 
@@ -30,7 +29,6 @@ public class GameClient extends BaseClient{
         return result.equals("leave");
     }
 
-    @Override
     protected void drawBoard(){
         ChessBoardDrawer.drawChessBoard(currentBoard, userColor);
     }
@@ -109,5 +107,9 @@ public class GameClient extends BaseClient{
 
     public Integer getGameID() {
         return gameID;
+    }
+
+    public void setCurrentBoard(ChessBoard currentBoard) {
+        this.currentBoard = currentBoard;
     }
 }
