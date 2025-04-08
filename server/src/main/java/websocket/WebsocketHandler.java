@@ -68,7 +68,12 @@ public class WebsocketHandler {
     }
 
     public void leaveGame(UserGameCommand userGameCommand, Session session) {
-
+        try {
+            logger.info("Leave game " + userGameCommand.toString());
+            wsService.leaveGame(userGameCommand, session);
+        }catch (IOException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     public void resignGame(UserGameCommand userGameCommand, Session session) {

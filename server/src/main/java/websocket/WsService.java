@@ -120,7 +120,7 @@ public class WsService {
         );
     }
 
-    private void leaveGame(UserGameCommand userGameCommand, Session userSession) throws IOException {
+    public void leaveGame(UserGameCommand userGameCommand, Session userSession) throws IOException {
         String username = validateRequest(userGameCommand, userSession);
         if (username == null) {
             sendError(userSession, "Cannot leave the game");
@@ -128,7 +128,22 @@ public class WsService {
         }
         GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
         String userColor = determineUserColor(gameData, username);
+        GameData newGameData = new GameData(
+                gameData.gameID(),
+                userColor.equals("WHITE") ? null: gameData.whiteUsername(),
+                userColor.equals("BLACK") ? null: gameData.blackUsername(),
+                gameData.gameName(),
+                gameData.game()
+        );
+        mysqlGameDAO.updateGame(newGameData);
 
+        String message = String.format("%s left the game as %s", username, userColor);
+        ServerMessage.ServerMessageType type = ServerMessage.ServerMessageType.NOTIFICATION;
+        NotifiResponse notifiResponse = new NotifiResponse(type, message);
+        connectionManager.remove(userGameCommand.getAuthToken());
+        connectionManager.broadcast(
+                userGameCommand.getAuthToken(), userGameCommand.getGameID(), type, notifiResponse, null
+        );
     }
 
 
