@@ -20,6 +20,7 @@ public class ChessGame {
     private boolean blackCastRook2;
     private boolean whiteCastRook2;
     private ChessPosition enpassantPosition;
+    private boolean gameStatus;
     public ChessGame() {
         teamTurn = TeamColor.WHITE;
         chessBoard = new ChessBoard();
@@ -31,6 +32,7 @@ public class ChessGame {
         blackCastRook1 = true;
         blackCastRook2 = true;
         enpassantPosition = null;
+        gameStatus = false;
     }
 
     /**
@@ -55,6 +57,14 @@ public class ChessGame {
     public enum TeamColor {
         WHITE,
         BLACK
+    }
+
+    public void setGameStatus(boolean gameStatus) {
+        this.gameStatus = gameStatus;
+    }
+
+    public boolean getGameStatus() {
+        return gameStatus;
     }
 
     /**

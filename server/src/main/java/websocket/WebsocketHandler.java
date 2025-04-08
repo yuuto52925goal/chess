@@ -42,8 +42,8 @@ public class WebsocketHandler {
         switch (action.getCommandType()) {
             case CONNECT -> connect(action, session, message);
             case MAKE_MOVE -> makeMove(action, session, message);
-            case LEAVE -> leaveGame(session);
-            case RESIGN -> resignGame(session);
+            case LEAVE -> leaveGame(action, session);
+            case RESIGN -> resignGame(action, session);
         }
     }
 
@@ -67,12 +67,17 @@ public class WebsocketHandler {
         }
     }
 
-    public void leaveGame(Session session) {
+    public void leaveGame(UserGameCommand userGameCommand, Session session) {
 
     }
 
-    public void resignGame(Session session) {
-        System.out.println("Resigned game");
+    public void resignGame(UserGameCommand userGameCommand, Session session) {
+        try {
+            logger.info("Resign game");
+            wsService.resign(userGameCommand, session);
+        } catch (IOException e){
+            logger.error(e.getMessage());
+        }
     }
 
 }
