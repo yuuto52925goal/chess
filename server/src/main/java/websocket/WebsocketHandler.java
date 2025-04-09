@@ -21,7 +21,7 @@ import java.io.IOException;
 @WebSocket
 public class WebsocketHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(WebsocketHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(WebsocketHandler.class);
     private final ConnectionManager connectionManager = new ConnectionManager();
     private final WsService wsService = new WsService(connectionManager);
 
