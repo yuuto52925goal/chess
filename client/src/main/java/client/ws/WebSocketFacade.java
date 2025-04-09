@@ -7,6 +7,7 @@ import model.request.WsMoveMergeRequest;
 import model.request.WsMoveRequest;
 //import org.glassfish.tyrus.core.wsadl.model.Endpoint;
 //import org.eclipse.jetty.websocket.api.Session;
+import model.result.ErrorResponse;
 import ui.ChessBoardDrawer;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadResponse;
@@ -28,7 +29,6 @@ public class WebSocketFacade extends Endpoint {
 
     public WebSocketFacade(String url, String useColor) {
         try {
-            ChessBoardDrawer chessBoardDrawer = new ChessBoardDrawer();
             this.userColor = useColor;
             url = url.replace("http", "ws");
             URI socketUrl = new URI(url + "/ws");
@@ -45,6 +45,7 @@ public class WebSocketFacade extends Endpoint {
                         switch (notifiResponse.getServerMessageType()) {
                             case LOAD_GAME -> loadGame(message);
                             case NOTIFICATION -> notifyMessage(message);
+                            case ERROR -> errorShow(message);
                         }
                     }
                 }
@@ -67,7 +68,12 @@ public class WebSocketFacade extends Endpoint {
 
     public void notifyMessage(String message) {
         NotifiResponse notifiResponse = new Gson().fromJson(message, NotifiResponse.class);
-        System.out.println(notifiResponse.message());
+        System.out.println("Notification: " + notifiResponse.message());
+    }
+
+    public void errorShow(String message) {
+        ErrorResponse errorResponse = new Gson().fromJson(message, ErrorResponse.class);
+        System.out.println("Error triggered " + errorResponse.message());
     }
 
     public void runUserCommand(String message) {
@@ -82,10 +88,11 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void makeMove(String message) {
+    public void makeChessMove(String message) {
         try {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             WsMoveRequest move = new Gson().fromJson(message, WsMoveRequest.class);
+
             WsMoveMergeRequest merge = new WsMoveMergeRequest(command, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(merge));
         } catch (IOException e) {

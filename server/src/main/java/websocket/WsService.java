@@ -54,22 +54,28 @@ public class WsService {
     }
 
     public void makeMove(UserGameCommand userGameCommand, Session userSession, WsMoveRequest wsMoveRequest) throws IOException, InvalidMoveException {
+        System.out.println("Make move");
         String username = validateRequest(userGameCommand, userSession);
         if (username == null) {
+            System.out.println(userGameCommand.getAuthToken());
+            System.out.println("username is null");
             return;
         }
         GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
         String userColor = determineUserColor(gameData, username);
         if (userColor.equals("OBSERVER")) {
+            System.out.println("userColor is OBSERVER");
             sendError(userSession, "Cannot make a move because you are observer");
             return;
         }
         if (gameData.game().getGameStatus()){
+            System.out.println("gameData is OBSERVER");
             sendError(userSession, "Cannot make a move because it is resigned");
             return;
         }
         String turn = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE ? "WHITE" : "BLACK";
         if (!userColor.equals(turn)) {
+            System.out.println("Observer");
             sendError(userSession, "Cannot make a move because you are observer");
             return;
         }
@@ -77,6 +83,7 @@ public class WsService {
             gameData.game().makeMove(wsMoveRequest.move());
         }catch (InvalidMoveException e) {
             sendError(userSession, "Invalid move");
+            System.out.println("Invalid move");
             return;
         }
 

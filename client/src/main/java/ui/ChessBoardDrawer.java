@@ -21,8 +21,6 @@ public class ChessBoardDrawer {
             }
         }
 
-        System.out.println(endPositions.size());
-        System.out.println(piecePosition);
         if (teamColor.equals("black")) {
             System.out.println(EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE +
                                "    h  g  f  e  d  c  b  a    " +

@@ -87,19 +87,29 @@ public class GameClient extends BaseClient{
         if (params.length != 2) {
             return "Error";
         }
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID);
-        Integer cTo1 = cToInt.get(String.valueOf(params[0].charAt(1)));
-        ChessPosition startPosition = new ChessPosition(
-                Integer.parseInt(String.valueOf(params[0].charAt(0))), cTo1
-        );
-        Integer cTo2 = cToInt.get(String.valueOf(params[1].charAt(1)));
-        ChessPosition endPosition = new ChessPosition(
-                Integer.parseInt(String.valueOf(params[1].charAt(0))), cTo2
-        );
-        WsMoveRequest wsMoveRequest = new WsMoveRequest(new ChessMove(startPosition, endPosition, null));
-        WsMoveMergeRequest wsMoveMergeRequest = new WsMoveMergeRequest(command, wsMoveRequest);
+        try {
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID);
+            Integer cTo1 = cToInt.get(String.valueOf(params[0].charAt(1)));
+            if (userColor.equals("white")) {
+                cTo1 = 9 - cTo1;
+            }
+            ChessPosition startPosition = new ChessPosition(
+                    Integer.parseInt(String.valueOf(params[0].charAt(0))), cTo1
+            );
+            Integer cTo2 = cToInt.get(String.valueOf(params[1].charAt(1)));
+            if (userColor.equals("white")) {
+                cTo2 = 9 - cTo2;
+            }
+            ChessPosition endPosition = new ChessPosition(
+                    Integer.parseInt(String.valueOf(params[1].charAt(0))), cTo2
+            );
+            WsMoveRequest wsMoveRequest = new WsMoveRequest(new ChessMove(startPosition, endPosition, null));
+            WsMoveMergeRequest wsMoveMergeRequest = new WsMoveMergeRequest(command, wsMoveRequest);
 
-        this.webSocketFacade.makeMove(new Gson().toJson(wsMoveMergeRequest));
+            this.webSocketFacade.makeChessMove(new Gson().toJson(wsMoveMergeRequest));
+        } catch (Exception e) {
+            return "Error";
+        }
         return "makeMove";
     }
 
@@ -115,6 +125,9 @@ public class GameClient extends BaseClient{
         }
         try {
             Integer cto1 = cToInt.get(String.valueOf(params[0].charAt(1)));
+            if (userColor.equals("white")){
+                cto1 = 9 - cto1;
+            }
             ChessPosition startPosition = new ChessPosition(
                     Integer.parseInt(String.valueOf(params[0].charAt(0))), cto1
             );
