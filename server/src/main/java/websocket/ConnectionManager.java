@@ -29,7 +29,10 @@ public class ConnectionManager {
         session.getRemote().sendString(new Gson().toJson(data));
     }
 
-    public void broadcast(String excludeToken, Integer gameID, ServerMessage.ServerMessageType notification, NotifiResponse message, LoadResponse loadResponse) throws IOException {
+    public void broadcast(
+            String excludeToken, Integer gameID, ServerMessage.ServerMessageType notification,
+            NotifiResponse message, LoadResponse loadResponse
+    ) throws IOException {
 
         if (!notification.equals(ServerMessage.ServerMessageType.NOTIFICATION) &&
                 !notification.equals(ServerMessage.ServerMessageType.LOAD_GAME)) {

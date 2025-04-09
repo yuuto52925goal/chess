@@ -2,12 +2,8 @@ package client.ws;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-//import com.sun.nio.sctp.NotificationHandler;
 import model.request.WsMoveMergeRequest;
 import model.request.WsMoveRequest;
-//import org.glassfish.tyrus.core.wsadl.model.Endpoint;
-//import org.eclipse.jetty.websocket.api.Session;
-//import model.result.ErrorResponse;
 import websocket.messages.ErrorResponse;
 import ui.ChessBoardDrawer;
 import websocket.commands.UserGameCommand;
