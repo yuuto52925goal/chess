@@ -7,7 +7,8 @@ import model.request.WsMoveMergeRequest;
 import model.request.WsMoveRequest;
 //import org.glassfish.tyrus.core.wsadl.model.Endpoint;
 //import org.eclipse.jetty.websocket.api.Session;
-import model.result.ErrorResponse;
+//import model.result.ErrorResponse;
+import websocket.messages.ErrorResponse;
 import ui.ChessBoardDrawer;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadResponse;
@@ -73,7 +74,11 @@ public class WebSocketFacade extends Endpoint {
 
     public void errorShow(String message) {
         ErrorResponse errorResponse = new Gson().fromJson(message, ErrorResponse.class);
-        System.out.println("Error triggered " + errorResponse.message());
+        if (errorResponse.errorMessage() == null){
+            System.out.println("Error" + message);
+        }else{
+            System.out.println("Error triggered " + errorResponse.errorMessage());
+        }
     }
 
     public void runUserCommand(String message) {

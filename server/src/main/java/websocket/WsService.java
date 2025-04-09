@@ -75,8 +75,9 @@ public class WsService {
         }
         String turn = gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE ? "WHITE" : "BLACK";
         if (!userColor.equals(turn)) {
-            System.out.println("Observer");
-            sendError(userSession, "Cannot make a move because you are observer");
+            System.out.println(userColor);
+            System.out.println("invalid userColor");
+            sendError(userSession, "Cannot make a move because invalid userColor");
             return;
         }
         try {
