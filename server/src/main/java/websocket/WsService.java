@@ -17,11 +17,24 @@ import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 public class WsService {
     private final MysqlAuthDAO mysqlAuthDAO;
     private final MysqlGameDAO mysqlGameDAO;
     private final ConnectionManager connectionManager;
+    private Map<Integer, String> intToC = Map.ofEntries(
+            entry(8, "a"),
+            entry(7, "b"),
+            entry(6, "c"),
+            entry(5, "d"),
+            entry(4, "e"),
+            entry(3, "f"),
+            entry(2, "g"),
+            entry(1, "h")
+    );
 
     public WsService(ConnectionManager connectionManager) {
         this.mysqlAuthDAO = new MysqlAuthDAO();
@@ -37,6 +50,7 @@ public class WsService {
         }
         GameData gameData = mysqlGameDAO.findGame(userGameCommand.getGameID());
         String userColor = determineUserColor(gameData, username);
+        System.out.println("userColor: " + userColor);
 
         System.out.println(username + " logged in " + userColor + " as userColor");
 //        Send the message himself
@@ -91,7 +105,12 @@ public class WsService {
         mysqlGameDAO.updateGame(gameData);
         LoadResponse loadResponse = new LoadResponse(ServerMessage.ServerMessageType.LOAD_GAME, gameData);
         connectionManager.sendTo(userSession, loadResponse);
-        String message = String.format("%s maked the move as %s", username, userColor);
+        System.out.println(wsMoveRequest.move().getStartPosition() + " start " + wsMoveRequest.move().getEndPosition() + " end");
+        String c1 = String.valueOf(wsMoveRequest.move().getStartPosition().getRow());
+        String intToC1 = intToC.get(wsMoveRequest.move().getStartPosition().getColumn());
+        String c2 = String.valueOf(wsMoveRequest.move().getEndPosition().getRow());
+        String intToC2 = intToC.get(wsMoveRequest.move().getEndPosition().getColumn());
+        String message = String.format("%s maked the move as %s. %s%s to %s%s", username, userColor, c1, intToC1, c2, intToC2);
         NotifiResponse notifiResponse = new NotifiResponse(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connectionManager.broadcast(
                 userGameCommand.getAuthToken(), userGameCommand.getGameID(),

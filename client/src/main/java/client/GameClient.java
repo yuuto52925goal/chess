@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessBoard;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import client.ws.WebSocketFacade;
@@ -84,7 +85,10 @@ public class GameClient extends BaseClient{
     }
 
     public String makeMove(String... params) {
-        if (params.length != 2) {
+        ChessPiece.PieceType promoPiece = null;
+        if (params.length == 3) {
+            promoPiece = ChessPiece.PieceType.valueOf(params[2]);
+        }else if (params.length != 2) {
             return "Error";
         }
         try {
@@ -103,7 +107,7 @@ public class GameClient extends BaseClient{
             ChessPosition endPosition = new ChessPosition(
                     Integer.parseInt(String.valueOf(params[1].charAt(0))), cTo2
             );
-            WsMoveRequest wsMoveRequest = new WsMoveRequest(new ChessMove(startPosition, endPosition, null));
+            WsMoveRequest wsMoveRequest = new WsMoveRequest(new ChessMove(startPosition, endPosition, promoPiece));
             WsMoveMergeRequest wsMoveMergeRequest = new WsMoveMergeRequest(command, wsMoveRequest);
 
             this.webSocketFacade.makeChessMove(new Gson().toJson(wsMoveMergeRequest));
@@ -145,7 +149,7 @@ public class GameClient extends BaseClient{
                 - Show help command: "help"
                 - Redraw Chess Board: "r"
                 - Leave Chess Board: "l"
-                - Make Move: "m start end"
+                - Make Move: "m start end promotion"
                 - Resign Chess Board: "re"
                 - Highlight legal moves: "h position"
                 """;

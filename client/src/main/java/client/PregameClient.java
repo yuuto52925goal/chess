@@ -127,8 +127,8 @@ public class PregameClient extends BaseClient {
                     this.gameClient.setGameID(entry.getKey());
                 }
             }
-            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, gameIndexNum);
-            webSocketFacade = new WebSocketFacade(url, "");
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, gameClient.getGameID());
+            webSocketFacade = new WebSocketFacade(url, "white");
             webSocketFacade.runUserCommand(new Gson().toJson(command));
             this.gameClient.run(webSocketFacade);
             return "observed game";
@@ -147,7 +147,7 @@ public class PregameClient extends BaseClient {
                 - List all the games that currently exist: "l"
                 - Create a new game: "c" <GAMENAME>
                 - Play game: "p" <GAMEID> <PLAYERCOLOR>
-                - Observe game: "o" <GAMENAME>
+                - Observe game: "o" <GAMEID>
                 - Logout the program: "q"
                 - Print this message: "h"
                 """;
