@@ -34,13 +34,17 @@ public class ChessBoardDrawer {
         int startRow = (teamColor.equals("black")) ? 1 : 8;
         int endRow = (teamColor.equals("black")) ? 8 : 1;
         int step = (teamColor.equals("black")) ? 1 : -1;
+        int startCol = (teamColor.equals("black")) ? 8 : 1;
+        int endCol = (teamColor.equals("black")) ? 1 : 8;
+        int stepCol = (teamColor.equals("black")) ? -1 : 1;
 
         for (int row = startRow; row != endRow + step; row += step) {
             System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_WHITE +
                              " " + row + " " +
                              EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
 
-            for (int col = 1; col <= 8; col++) {
+            for (int col = startCol; col != endCol + stepCol; col += stepCol) {
+//                System.out.println(row + " " + col);
                 ChessPosition currentPosition = new ChessPosition(row, col);
                 String squareColor = ((row + col) % 2 == 0) ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
                         : EscapeSequences.SET_BG_COLOR_DARK_GREY;

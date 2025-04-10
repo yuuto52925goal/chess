@@ -26,14 +26,14 @@ public class WsService {
     private final MysqlGameDAO mysqlGameDAO;
     private final ConnectionManager connectionManager;
     private Map<Integer, String> intToC = Map.ofEntries(
-            entry(8, "a"),
-            entry(7, "b"),
-            entry(6, "c"),
-            entry(5, "d"),
-            entry(4, "e"),
-            entry(3, "f"),
-            entry(2, "g"),
-            entry(1, "h")
+            entry(1, "a"),
+            entry(2, "b"),
+            entry(3, "c"),
+            entry(4, "d"),
+            entry(5, "e"),
+            entry(6, "f"),
+            entry(7, "g"),
+            entry(8, "h")
     );
 
     public WsService(ConnectionManager connectionManager) {
@@ -110,7 +110,17 @@ public class WsService {
         String intToC1 = intToC.get(wsMoveRequest.move().getStartPosition().getColumn());
         String c2 = String.valueOf(wsMoveRequest.move().getEndPosition().getRow());
         String intToC2 = intToC.get(wsMoveRequest.move().getEndPosition().getColumn());
+        ChessGame.TeamColor teamColor = userColor.equals("BLACK") ? ChessGame.TeamColor.WHITE: ChessGame.TeamColor.BLACK;
         String message = String.format("%s maked the move as %s. %s%s to %s%s", username, userColor, c1, intToC1, c2, intToC2);
+        if (gameData.game().isInCheckmate(teamColor)){
+            System.out.println("Checkmate");
+            String checkmateUser = teamColor.equals(ChessGame.TeamColor.WHITE) ? gameData.blackUsername() : gameData.whiteUsername();
+            message = String.format("%s is in Checkmate", username, checkmateUser);
+        }else if (gameData.game().isInCheck(teamColor)){
+            System.out.println("Checkin");
+            String checkInUser = teamColor.equals(ChessGame.TeamColor.WHITE) ? gameData.blackUsername() : gameData.whiteUsername();
+            message = String.format("%s is in Check", username, checkInUser);
+        }
         NotifiResponse notifiResponse = new NotifiResponse(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connectionManager.broadcast(
                 userGameCommand.getAuthToken(), userGameCommand.getGameID(),

@@ -11,10 +11,7 @@ import model.request.WsMoveRequest;
 import ui.ChessBoardDrawer;
 import websocket.commands.UserGameCommand;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Map.entry;
 
@@ -27,14 +24,14 @@ public class GameClient extends BaseClient{
     private ChessBoardDrawer chessBoardDrawer;
     private WebSocketFacade webSocketFacade;
     private Map<String, Integer> cToInt = Map.ofEntries(
-            entry("a", 8),
-            entry("b", 7),
-            entry("c", 6),
-            entry("d", 5),
-            entry("e", 4),
-            entry("f", 3),
-            entry("g", 2),
-            entry("h", 1)
+            entry("a", 1),
+            entry("b", 2),
+            entry("c", 3),
+            entry("d", 4),
+            entry("e", 5),
+            entry("f", 6),
+            entry("g", 7),
+            entry("h", 8)
     );
 
     public GameClient(String auth) {
@@ -94,16 +91,16 @@ public class GameClient extends BaseClient{
         try {
             UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID);
             Integer cTo1 = cToInt.get(String.valueOf(params[0].charAt(1)));
-            if (userColor.equals("white")) {
-                cTo1 = 9 - cTo1;
-            }
+//            if (userColor.equals("white")) {
+//                cTo1 = 9 - cTo1;
+//            }
             ChessPosition startPosition = new ChessPosition(
                     Integer.parseInt(String.valueOf(params[0].charAt(0))), cTo1
             );
             Integer cTo2 = cToInt.get(String.valueOf(params[1].charAt(1)));
-            if (userColor.equals("white")) {
-                cTo2 = 9 - cTo2;
-            }
+//            if (userColor.equals("white")) {
+//                cTo2 = 9 - cTo2;
+//            }
             ChessPosition endPosition = new ChessPosition(
                     Integer.parseInt(String.valueOf(params[1].charAt(0))), cTo2
             );
@@ -119,8 +116,18 @@ public class GameClient extends BaseClient{
 
     public String resign(String... params) {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, auth, gameID);
-        this.webSocketFacade.runUserCommand(new Gson().toJson(command));
-        return "resign";
+        Scanner in = new Scanner(System.in);
+        String input = "";
+        while(!input.equals("y") && !input.equals("n")){
+            System.out.println("Are you sure you want to resign? y for yes & n for no: ");
+            input = in.nextLine();
+        }
+        if (input.equals("y")){
+            this.webSocketFacade.runUserCommand(new Gson().toJson(command));
+            return "resign";
+        }else{
+            return "No resigned";
+        }
     }
 
     public String highlight(String... params) {
@@ -129,9 +136,7 @@ public class GameClient extends BaseClient{
         }
         try {
             Integer cto1 = cToInt.get(String.valueOf(params[0].charAt(1)));
-            if (userColor.equals("white")){
-                cto1 = 9 - cto1;
-            }
+//            cto1 = 9 - cto1;
             ChessPosition startPosition = new ChessPosition(
                     Integer.parseInt(String.valueOf(params[0].charAt(0))), cto1
             );
